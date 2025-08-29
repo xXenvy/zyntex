@@ -80,7 +80,7 @@ def parse_args() -> Namespace:
     p.add_argument("--out-dir", default="zig/zig-out", help="Build output directory.")
     p.add_argument(
         "--dest-dir",
-        default="zyra/bindings/native",
+        default="zyntex/bindings/native",
         help="Destination directory for native libs."
     )
     p.add_argument("--keep-cache", action="store_true", help="Do not delete zig cache dir.")
