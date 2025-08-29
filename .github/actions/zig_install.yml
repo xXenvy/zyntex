@@ -1,0 +1,29 @@
+name: "Install zig"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install zig 0.14.1 (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        curl -sSfL https://ziglang.org/download/0.14.1/zig-x86_64-linux-0.14.1.tar.xz | tar -xJ
+      shell: bash
+
+    - name: Add zig to PATH (Linux)
+      if: runner.os == 'Linux'
+      run: echo "${{ github.workspace }}/zig-x86_64-linux-0.14.1" >> $GITHUB_PATH
+      shell: bash
+
+    - name: Install zig 0.14.1 (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        Invoke-WebRequest -Uri "https://ziglang.org/download/0.14.1/zig-x86_64-windows-0.14.1.zip" -OutFile zig.zip -UseBasicParsing
+        Expand-Archive zig.zip -DestinationPath $PWD
+        Remove-Item zig.zip
+      shell: pwsh
+
+    - name: Add zig to PATH (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        echo "${{ github.workspace }}\\zig-x86_64-windows-0.14.1" >> $env:GITHUB_PATH
+      shell: pwsh

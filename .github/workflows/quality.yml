@@ -1,0 +1,25 @@
+name: Code-Quality
+
+on: [ push ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.9" ]
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r dev-requirements.txt
+
+      - name: Run pyright
+        run: |
+          pyright ./zyra
+
+      - name: Run pylint
+        run: |
+          pylint ./zyra

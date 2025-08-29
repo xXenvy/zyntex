@@ -1,0 +1,44 @@
+name: Tests
+
+on: [ push ]
+
+jobs:
+  pytest-ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.9" ]
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install zig
+        uses: ./.github/actions/zig_install
+
+      - name: Install dependencies
+        run: pip install -r dev-requirements.txt .
+
+      - name: Run pytest
+        run: |
+          pytest -v -s tests
+
+  pytest-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install zig
+        uses: ./.github/actions/zig_install
+
+      - name: Install dependencies
+        run: pip install -r dev-requirements.txt .
+
+      - name: Run pytest
+        run: |
+          pytest -v -s tests
