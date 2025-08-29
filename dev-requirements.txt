@@ -1,7 +1,7 @@
 pytest==8.4.1
 pyright==1.1.404
 pylint==3.3.6
-setuptools-80.9.0
+setuptools==80.9.0
 
 sphinx==8.2.3
 sphinx_autodoc_typehints==3.2.0
