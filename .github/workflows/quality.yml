@@ -18,8 +18,8 @@ jobs:
 
       - name: Run pyright
         run: |
-          pyright ./zyra
+          pyright ./zyntex
 
       - name: Run pylint
         run: |
-          pylint ./zyra
+          pylint ./zyntex

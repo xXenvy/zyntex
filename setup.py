@@ -23,7 +23,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8") \
 setup(
     name="zyntex",
     version=str(__version__),
-    description="A high-level Python package to parse and generate Zig code.",
+    description="A high-level Python package to parse Zig code.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="xXenvy",
@@ -35,12 +35,9 @@ setup(
     license="MIT",
     packages=find_packages(exclude=("tests", "zig")),
     include_package_data=True,
-    package_data={"zyra": ["bindings/native/*"]},
+    package_data={"zyntex": ["bindings/native/*"]},
     python_requires=">=3.9",
     install_requires=[],
-    extras_require={
-        "dev": ["pytest==8.4.1", "pyright==1.1.404", "pylint==3.3.6"],
-    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
