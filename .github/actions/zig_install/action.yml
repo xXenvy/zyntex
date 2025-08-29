@@ -1,4 +1,5 @@
 name: "Install zig"
+description: "Zig installation"
 
 runs:
   using: "composite"
