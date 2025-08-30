@@ -3,7 +3,7 @@ pyright==1.1.404
 pylint==3.3.6
 setuptools==80.9.0
 
-sphinx==8.2.3
+sphinx==7.4.7
 sphinx_autodoc_typehints==3.2.0
 sphinxext.opengraph==0.13.0
 sphinx_inline_tabs==2023.4.21
