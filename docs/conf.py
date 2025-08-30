@@ -8,12 +8,10 @@
 import sys
 import os
 
-from zyntex import __version__
-
 project = 'zyntex'
 copyright = '2025, xXenvy'
 author = 'xXenvy'
-release = str(__version__)
+release = "0.0.2"
 
 sys.path.insert(0, os.path.abspath(".."))
 
