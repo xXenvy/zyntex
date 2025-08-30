@@ -29,8 +29,8 @@ setup(
     author="xXenvy",
     url="https://github.com/xXenvy/zyra",
     project_urls={
-        "Source": "https://github.com/xXenvy/zyra",
-        "Tracker": "https://github.com/xXenvy/zyra/issues",
+        "Source": "https://github.com/xXenvy/zyntex",
+        "Tracker": "https://github.com/xXenvy/zyntex/issues",
     },
     license="MIT",
     packages=find_packages(exclude=("tests", "zig")),
