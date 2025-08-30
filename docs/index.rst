@@ -5,7 +5,7 @@ high-level node objects (functions, variables, tests, etc.) for easy
 inspection. Currently, it can parse Zig code written in version **0.14.1** -
 the supported parsing version will be continuously updated in the future.
 
-Zyra uses Zig's `std` AST parser as a backend (via native bindings), which
+Zyntex uses Zig's `std` AST parser as a backend (via native bindings), which
 provides fast and low-memory parsing.
 
 **Be aware that the project is at a very early stage of development

@@ -8,9 +8,9 @@
 import sys
 import os
 
-from zyra import __version__
+from zyntex import __version__
 
-project = 'zyra'
+project = 'zyntex'
 copyright = '2025, xXenvy'
 author = 'xXenvy'
 release = str(__version__)
