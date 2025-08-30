@@ -1,4 +1,6 @@
 # Zyntex - High-level Zig parser for Python
+**Docs:** https://zyntex.readthedocs.io/en/latest
+
 Zyntex is a Python package that allows you to parse Zig code and perform operations on 
 high-level language elements (functions, variables).
 Function bodies and other low-level constructs are currently returned as raw strings.
@@ -37,8 +39,4 @@ print(variable.name)  # result
 print(variable.const)  # True
 ```
 
-## License
-See the `LICENSE` file in the repository.
-
----
 For questions or contributions, open an issue or PR on the project repository.
