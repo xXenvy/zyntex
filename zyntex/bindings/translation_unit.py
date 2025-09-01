@@ -47,7 +47,7 @@ class PyTranslationUnit:
         return f"PyTranslationUnit(path={self._path}, released={self._released})"
 
     def nodes_count(self) -> int:
-        """GetS the total number of AST nodes within this translation unit."""
+        """Gets the total number of AST nodes within this translation unit."""
         return self._lib.getTranslationUnitNodesCount(self._tu_ptr)
 
     def tokens_count(self) -> int:
@@ -59,12 +59,12 @@ class PyTranslationUnit:
         return self._lib.getTranslationUnitErrorsCount(self._tu_ptr)
 
     def nodes(self) -> list[PyASTNode]:
-        """Returns a list of AST nodes parsed in the translation unit."""
+        """A list of AST nodes parsed in the translation unit."""
         nodes = self._lib.getTranslationUnitNodes(self._tu_ptr).to_list(ASTNode)
         return list(map(lambda n: PyASTNode(self, n), nodes))
 
     def root_nodes(self) -> list[PyASTNode]:
-        """Returns the root AST nodes parsed in the translation unit."""
+        """The root AST nodes parsed in the translation unit."""
         root_nodes = []
         index_list = self._lib.getTranslationUnitRootNodes(self._tu_ptr).to_list(c_uint32)
         for index in index_list:
@@ -73,11 +73,11 @@ class PyTranslationUnit:
         return root_nodes
 
     def tokens(self) -> list[ASTToken]:
-        """Returns a list of AST tokens parsed in the translation unit."""
+        """A list of AST tokens parsed in the translation unit."""
         return self._lib.getTranslationUnitTokens(self._tu_ptr).to_list(ASTToken)
 
     def errors(self) -> list[ErrorReport]:
-        """Returns a list of ErrorReport instances for all errors encountered during parsing.
+        """A list of ErrorReport instances for all errors encountered during parsing.
         Parsing continues despite errors, so this list may contain multiple reports."""
         return self._lib.getTranslationUnitErrors(self._tu_ptr).to_list(ErrorReport)
 
@@ -96,7 +96,7 @@ class PyTranslationUnit:
 
     @property
     def path(self) -> str:
-        """Returns the original file path used for parsing."""
+        """The original file path used for parsing."""
         return self._path
 
     @property
