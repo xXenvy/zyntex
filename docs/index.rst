@@ -18,6 +18,7 @@ For planned features and work in progress, see :ref:`Roadmap`.
 Getting started.
 ================
 - **First steps:** :ref:`Installation` | :ref:`Examples` | :ref:`API Reference`.
+- **Want to contribute?** See :ref:`Contributing`.
 - **Need help?** Create a question on `Github Discussions. <https://github.com/xXenvy/zyra/discussions>`_
 
 .. toctree::
@@ -27,4 +28,5 @@ Getting started.
    installation
    examples/index
    roadmap
+   contributing
    api/index
