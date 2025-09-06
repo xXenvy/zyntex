@@ -7,7 +7,6 @@ const TranslationUnit = @import("../src/translation_unit.zig");
 const ErrorReport = structs.ErrorReport;
 const ASTNode = structs.ASTNode;
 const ASTToken = structs.ASTToken;
-
 const allocator = std.testing.allocator;
 
 test "parser generic slice roundtrip" {
@@ -22,6 +21,7 @@ test "parser generic slice roundtrip" {
     };
     const generic_slice = c_api.makeSlice(Item, arr[0..].ptr, arr.len);
     const many_ptr: [*]const Item = @ptrCast(@alignCast(generic_slice.ptr));
+
     for (0..arr.len) |i| {
         const p_i: *const Item = @ptrCast(many_ptr + i);
         try std.testing.expect(p_i == &arr[i]);
@@ -286,9 +286,10 @@ test "parser parses externs correctly" {
 
 test "parser parses exports correctly" {
     const tu = c_api.createTranslationUnitFromSource(
-        \\pub export fn public_testing(a: usize) void {};
-        \\export fn private_testing() usize {};
+        \\pub export fn public_testing(a: usize) void {}
+        \\export fn private_testing() usize {}
     ).?;
+    // todo: add similar tests but use variables instead.
     defer c_api.freeTranslationUnit(tu);
     const indexes: []const u32 = c_api.toSlice(u32, c_api.getTranslationUnitRootNodes(tu));
     try std.testing.expectEqual(indexes.len, 2);

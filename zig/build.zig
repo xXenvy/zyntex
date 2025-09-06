@@ -8,13 +8,13 @@ pub fn build(b: *std.Build) void {
         .{ .cpu_arch = .x86_64, .os_tag = .macos, .abi = .none },
     };
 
-    for (targets) |t| {
+    for (targets) |target| {
         const lib = b.addSharedLibrary(.{
             .name = "clib",
             .root_source_file = .{
                 .src_path = .{ .owner = b, .sub_path = "src/c_api.zig" },
             },
-            .target = b.resolveTargetQuery(t),
+            .target = b.resolveTargetQuery(target),
             .optimize = optimize,
         });
         b.installArtifact(lib);

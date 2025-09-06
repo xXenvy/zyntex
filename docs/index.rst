@@ -19,7 +19,7 @@ Getting started.
 ================
 - **First steps:** :ref:`Installation` | :ref:`Examples` | :ref:`API Reference`.
 - **Want to contribute?** See :ref:`Contributing`.
-- **Need help?** Create a question on `Github Discussions. <https://github.com/xXenvy/zyra/discussions>`_
+- **Need help?** Create a question on `Github Discussions. <https://github.com/xXenvy/zyntex/discussions>`_
 
 .. toctree::
    :maxdepth: 3
