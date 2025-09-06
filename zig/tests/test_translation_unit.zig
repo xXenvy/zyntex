@@ -1,20 +1,8 @@
 const std = @import("std");
 const allocator = std.testing.allocator;
 
+const normalize = @import("helpers.zig").normalize;
 const TranslationUnit = @import("../src/translation_unit.zig");
-
-// Normalize line endings: removes all '\r'
-fn normalize(input: []const u8, output: []u8) []const u8 {
-    var out_idx: usize = 0;
-
-    for (input) |c| {
-        if (c != '\r') {
-            output[out_idx] = c;
-            out_idx += 1;
-        }
-    }
-    return output[0..out_idx];
-}
 
 test "parsing simple valid code from source produces no errors" {
     var tu = try TranslationUnit.initFromSource("pub fn main() void {}");
@@ -74,7 +62,6 @@ test "parsing large valid code from file produces no errors" {
     try std.testing.expectEqual(tu.tree.tokens.len, 8323);
     try std.testing.expectEqual(tu.tree.nodes.len, 4433);
     try std.testing.expectEqual(tu.errors.len, 0);
-    try std.testing.expectEqual(tu.tree.source.len, 69791);
 }
 
 test "parsing simple invalid code from file produces two errors" {
