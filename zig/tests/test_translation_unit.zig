@@ -3,10 +3,17 @@ const allocator = std.testing.allocator;
 
 const TranslationUnit = @import("../src/translation_unit.zig");
 
-// Normalize line endings by removing '\r'
+// Normalize line endings: removes all '\r'
 fn normalize(input: []const u8, output: []u8) []const u8 {
-    const len = std.mem.replace(u8, input, "\r", "", output);
-    return output[0..len];
+    var out_idx: usize = 0;
+
+    for (input) |c| {
+        if (c != '\r') {
+            output[out_idx] = c;
+            out_idx += 1;
+        }
+    }
+    return output[0..out_idx];
 }
 
 test "parsing simple valid code from source produces no errors" {
