@@ -3,7 +3,7 @@ name: Tests
 on: [ push ]
 
 jobs:
-  pytest-ubuntu:
+  tests-ubuntu:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,7 +23,11 @@ jobs:
         run: |
           pytest -v -s tests
 
-  pytest-windows:
+      - name: Run zig tests
+        run: |
+          cd zig && zig build test
+
+  tests-windows:
     runs-on: windows-latest
     strategy:
       matrix:
@@ -42,3 +46,8 @@ jobs:
       - name: Run pytest
         run: |
           pytest -v -s tests
+
+      - name: Run zig tests
+        run: |
+          cd zig
+          zig build test
