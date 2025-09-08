@@ -27,13 +27,13 @@ class SourceCode:
         for node in self._unit.root_nodes():
             for node_type in self.types:
                 if node_type.is_node_valid(node):
-                    result.append(node_type(node))
+                    result.append(node_type.from_node(node))
         return result
 
     @property
     def types(self) -> Tuple[Type[INodeElement], ...]:
         """Supported top-level node element types."""
-        return FunctionDeclaration, VariableDeclaration, TestDeclaration
+        return TestDeclaration, FunctionDeclaration, VariableDeclaration
 
     @property
     def errors(self) -> List[ErrorReport]:

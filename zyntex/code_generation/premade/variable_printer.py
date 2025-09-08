@@ -14,17 +14,17 @@ class VariablePrinter(IDefaultPrintable):
     def print(self, target: VariableDeclaration) -> str:
         modifiers = "".join(
             mod for condition, mod in (
-                (target.public, "pub "),
-                (target.extern, "extern "),
-                (target.export, "export "),
-                (target.const, "const "),
-                (not target.const, "var "),
+                (target.is_public, "pub "),
+                (target.is_extern, "extern "),
+                (not target.is_extern and target.is_export, "export "),
+                (target.is_const, "const "),
+                (not target.is_const, "var "),
             ) if condition
         )
         type_hint = ""
         if target.type_hint:
             type_hint = f": {self._dispatcher.print(target.type_hint)}"
-        if target.extern:
+        if target.is_extern:
             return f"{modifiers}{target.name}{type_hint};"
         return f"{modifiers}{target.name}{type_hint} = {target.value};"
 

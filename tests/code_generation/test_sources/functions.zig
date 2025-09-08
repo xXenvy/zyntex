@@ -9,8 +9,10 @@ fn privateTestFunc(x: usize) usize {
 pub extern fn publicExternTest(a: usize) void;
 extern fn privateExternTest() usize;
 
-pub export fn publicExportTest(a: ?*u32, b: **u32) void {
+pub export fn publicExportTest(a: ?*u32, b: *myStruct) void {
     _ = a;
     _ = b;
 }
 export fn privateExportTest() usize {}
+
+const myStruct = struct {};

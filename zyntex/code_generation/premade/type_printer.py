@@ -16,19 +16,20 @@ class TypePrinter(IDefaultPrintable):
         current: TypeNode = target
         while True:
             if current.is_type():
-                if current.is_const():
+                if current.const:
                     result += "const "
-                result += current.spelling
+                result += current.type.value
                 break
             if current.is_optional():
                 result += "?"
                 current = cast(TypeNode, current.optional_type)
                 continue
-            if current.is_ptr():
+            if current.is_pointer():
                 result += "*"
-                current = cast(TypeNode, current.ptr_type)
+                current = cast(TypeNode, current.pointer_type)
                 continue
             if current.is_array():
+                assert current.array_length, f"Array type ({current!r}) has no array_length."
                 result += f"[{current.array_length}]"
                 current = cast(TypeNode, current.array_type)
                 continue

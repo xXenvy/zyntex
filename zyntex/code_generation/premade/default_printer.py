@@ -10,7 +10,7 @@ class IDefaultPrintable(IPrinter, ABC):
 
     Subclasses must define `target_type()` and will be added to the
     shared dispatcher."""
-    dispatcher: PrinterDispatcher = PrinterDispatcher()
+    dispatcher = PrinterDispatcher()
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

@@ -4,6 +4,7 @@ from pathlib import Path
 from zyntex.code_generation.premade import FunctionPrinter, TypePrinter
 from zyntex.code_generation import PrinterDispatcher
 from zyntex.syntax import FunctionDeclaration, TypeNode
+from zyntex.bindings import PrimitiveType
 from zyntex import SourceFile
 
 
@@ -18,7 +19,7 @@ class TestFunctionPrinter:
         dispatcher.add(TypeNode, TypePrinter)
         cls.printer = FunctionPrinter(dispatcher)
 
-    def test_basic_functions_print(self):
+    def test_file_basic_functions_print(self):
         public_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[0])
         assert self.printer.print(public_function).replace("\r\n", "\n") == """
 pub fn publicTestFunc() usize {
@@ -31,7 +32,7 @@ fn privateTestFunc(x: usize) usize {
     return x;
 }""".strip()
 
-    def test_extern_functions_print(self):
+    def test_file_extern_functions_print(self):
         public_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[2])
         assert self.printer.print(public_function).replace("\r\n", "\n") == """
 pub extern fn publicExternTest(a: usize) void;""".strip()
@@ -39,10 +40,10 @@ pub extern fn publicExternTest(a: usize) void;""".strip()
         private_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[3])
         assert self.printer.print(private_function) == "extern fn privateExternTest() usize;"
 
-    def test_export_functions_print(self):
+    def test_file_export_functions_print(self):
         public_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[4])
         assert self.printer.print(public_function).replace("\r\n", "\n") == """
-pub export fn publicExportTest(a: ?*u32, b: **u32) void {
+pub export fn publicExportTest(a: ?*u32, b: *myStruct) void {
     _ = a;
     _ = b;
 }""".strip()

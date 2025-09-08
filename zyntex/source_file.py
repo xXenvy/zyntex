@@ -26,7 +26,7 @@ class SourceFile:
         for node in self._unit.root_nodes():
             for node_type in self.types:
                 if node_type.is_node_valid(node):
-                    result.append(node_type(node))
+                    result.append(node_type.from_node(node))
         return result
 
     @property

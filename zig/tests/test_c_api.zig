@@ -318,3 +318,5 @@ test "parser parses exports correctly" {
     try std.testing.expectEqual(c_api.getNodeParamsCount(tu, func_node_1), 1);
     try std.testing.expectEqual(c_api.getNodeParamsCount(tu, func_node_2), 0);
 }
+
+pub extern const abc: usize;

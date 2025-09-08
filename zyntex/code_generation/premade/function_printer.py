@@ -14,9 +14,9 @@ class FunctionPrinter(IDefaultPrintable):
     def print(self, target: FunctionDeclaration) -> str:
         modifiers = "".join(
             mod for condition, mod in (
-                (target.public, "pub "),
-                (target.extern, "extern "),
-                (target.export, "export "),
+                (target.is_public, "pub "),
+                (target.is_extern, "extern "),
+                (not target.is_extern and target.is_export, "export "),
             ) if condition
         )
         args = ", ".join(
