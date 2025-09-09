@@ -19,6 +19,8 @@ class SourceFile:
         If True, the underlying `PyTranslationUnit` will **not** be created
         during construction. Instead, parsing is deferred until the translation
         unit or other derived properties (like `.content`) are first accessed.
+
+        .. versionadded:: 0.1.3
     """
 
     __slots__ = ("_unit", "_file_path", "_content", "_errors")
@@ -60,7 +62,11 @@ class SourceFile:
 
     @property
     def unit(self) -> PyTranslationUnit:
-        """The parsed translation unit for this file."""
+        """
+        The parsed translation unit for this file.
+
+        .. versionadded:: 0.1.3
+        """
         if self._unit is None:
             self._unit = PyTranslationUnit.from_path(
                 lib=get_native_library(), path=self._file_path

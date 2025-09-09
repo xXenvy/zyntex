@@ -24,6 +24,8 @@ class SourceCode:
         If True, the underlying `PyTranslationUnit` will **not** be created
         during construction. Instead, parsing is deferred until the translation
         unit or other derived properties (like `.content`) are first accessed.
+
+        .. versionadded:: 0.1.3
     """
     __slots__ = ("_unit", "_source", "_content", "_errors")
 
@@ -59,7 +61,11 @@ class SourceCode:
 
     @property
     def unit(self) -> PyTranslationUnit:
-        """The parsed translation unit for this source."""
+        """
+        The parsed translation unit for this source.
+
+        .. versionadded:: 0.1.3
+        """
         if self._unit is None:
             self._unit = PyTranslationUnit.from_source(
                 lib=get_native_library(), source=self._source
