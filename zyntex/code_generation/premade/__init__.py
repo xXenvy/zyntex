@@ -1,4 +1,6 @@
 from .default_printer import DefaultCodePrinter, IDefaultPrintable
+from .source_code_printer import SourceCodePrinter
+from .source_file_printer import SourceFilePrinter
 from .function_printer import FunctionPrinter
 from .variable_printer import VariablePrinter
 from .test_printer import TestPrinter
@@ -11,5 +13,7 @@ __all__ = (
     "TypePrinter",
     "TestPrinter",
     "DefaultCodePrinter",
-    "IDefaultPrintable"
+    "IDefaultPrintable",
+    "SourceCodePrinter",
+    "SourceFilePrinter"
 )

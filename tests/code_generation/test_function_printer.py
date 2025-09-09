@@ -4,7 +4,6 @@ from pathlib import Path
 from zyntex.code_generation.premade import FunctionPrinter, TypePrinter
 from zyntex.code_generation import PrinterDispatcher
 from zyntex.syntax import FunctionDeclaration, TypeNode
-from zyntex.bindings import PrimitiveType
 from zyntex import SourceFile
 
 

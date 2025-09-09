@@ -8,7 +8,10 @@ from .default_printer import IDefaultPrintable
 class TypePrinter(IDefaultPrintable):
     """Printer for Zig type nodes."""
 
-    def __init__(self, dispatcher: PrinterDispatcher):
+    def __init__(
+            self,
+            dispatcher: PrinterDispatcher,
+    ):
         self._dispatcher = dispatcher
 
     def print(self, target: TypeNode) -> str:

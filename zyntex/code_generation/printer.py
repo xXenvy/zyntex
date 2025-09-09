@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Type
+from typing import Dict, Type, Any
 
-from ..syntax import INodeElement
+from .configuration import PrinterConfiguration
 
 
 class IPrinter(ABC):
@@ -11,11 +11,14 @@ class IPrinter(ABC):
     and implement `print(target)` to return code for a node."""
 
     @abstractmethod
-    def __init__(self, dispatcher: "PrinterDispatcher") -> None:
+    def __init__(
+            self,
+            dispatcher: "PrinterDispatcher",
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def print(self, target: INodeElement) -> str:
+    def print(self, target: Any) -> str:
         """Produced output of the printer."""
         raise NotImplementedError
 
@@ -26,18 +29,19 @@ class PrinterDispatcher:
     You can register printers with `add`, remove them with `remove`,
     and use `print` to get code for any supported node."""
 
-    def __init__(self) -> None:
-        self._printers: Dict[Type[INodeElement], IPrinter] = {}
+    def __init__(self, configuration: PrinterConfiguration = PrinterConfiguration()) -> None:
+        self.configuration = configuration
+        self._printers: Dict[Type, IPrinter] = {}
 
-    def add(self, target_type: Type[INodeElement], target_printer_type: Type[IPrinter]) -> None:
+    def add(self, target_type: Type, target_printer_type: Type[IPrinter]) -> None:
         """Register a printer for the given node type."""
         self._printers[target_type] = target_printer_type(self)
 
-    def remove(self, target_type: Type[INodeElement]) -> None:
+    def remove(self, target_type: Type) -> None:
         """Unregister the printer for the given node type."""
         del self._printers[target_type]
 
-    def print(self, target: INodeElement) -> str:
+    def print(self, target: Any) -> str:
         """Produces source code for the given AST node."""
         target_type = type(target)
         if printer := self._printers.get(target_type):

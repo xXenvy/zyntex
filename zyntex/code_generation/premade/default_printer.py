@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Type
+from typing import Type, Any
 
-from ...syntax import INodeElement
 from ..printer import IPrinter, PrinterDispatcher
 
 
@@ -19,7 +18,7 @@ class IDefaultPrintable(IPrinter, ABC):
 
     @staticmethod
     @abstractmethod
-    def target_type() -> Type[INodeElement]:
+    def target_type() -> Type:
         """The NodeElement this printer handles."""
         raise NotImplementedError
 
@@ -30,5 +29,5 @@ class DefaultCodePrinter(IPrinter):
     def __init__(self, dispatcher: PrinterDispatcher = IDefaultPrintable.dispatcher) -> None:
         self.dispatcher = dispatcher
 
-    def print(self, target: INodeElement) -> str:
+    def print(self, target: Any) -> str:
         return self.dispatcher.print(target)

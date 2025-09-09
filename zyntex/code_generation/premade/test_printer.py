@@ -8,7 +8,10 @@ from .default_printer import IDefaultPrintable
 class TestPrinter(IDefaultPrintable):
     """Printer for Zig test declarations."""
 
-    def __init__(self, dispatcher: PrinterDispatcher):
+    def __init__(
+            self,
+            dispatcher: PrinterDispatcher,
+    ):
         self._dispatcher = dispatcher
 
     def print(self, target: TestDeclaration) -> str:
