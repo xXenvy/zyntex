@@ -1,5 +1,5 @@
 zyntex
-====
+======
 
 .. automodule:: zyntex
    :members:

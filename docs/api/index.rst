@@ -1,5 +1,5 @@
 API Reference
-====================================
+=============
 
 .. toctree::
    :maxdepth: 2
@@ -7,4 +7,5 @@ API Reference
 
    zyntex
    zyntex_syntax
+   zyntex_code_generation
    zyntex_bindings

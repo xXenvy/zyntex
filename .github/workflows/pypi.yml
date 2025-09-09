@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build-and-publish:
+    needs: [ tests-ubuntu, tests-windows ]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:

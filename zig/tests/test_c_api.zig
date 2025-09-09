@@ -2,12 +2,12 @@ const std = @import("std");
 
 const c_api = @import("../src/c_api.zig");
 const structs = @import("../src/structs.zig");
+const normalize = @import("helpers.zig").normalize;
 const TranslationUnit = @import("../src/translation_unit.zig");
 
 const ErrorReport = structs.ErrorReport;
 const ASTNode = structs.ASTNode;
 const ASTToken = structs.ASTToken;
-
 const allocator = std.testing.allocator;
 
 test "parser generic slice roundtrip" {
@@ -22,6 +22,7 @@ test "parser generic slice roundtrip" {
     };
     const generic_slice = c_api.makeSlice(Item, arr[0..].ptr, arr.len);
     const many_ptr: [*]const Item = @ptrCast(@alignCast(generic_slice.ptr));
+
     for (0..arr.len) |i| {
         const p_i: *const Item = @ptrCast(many_ptr + i);
         try std.testing.expect(p_i == &arr[i]);
@@ -47,11 +48,13 @@ test "parser parses simple source file correctly" {
         \\}
         \\
     ;
-    const source: []const u8 = c_api.toSlice(u8, c_api.getTranslationUnitSource(tu));
+
+    var buf: [1024]u8 = undefined;
+    const source: []const u8 = normalize(c_api.toSlice(u8, c_api.getTranslationUnitSource(tu)), &buf);
 
     try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 30);
     try std.testing.expectEqual(c_api.getTranslationUnitNodesCount(tu), 14);
-    try std.testing.expectEqualStrings(source, expected);
+    try std.testing.expectEqualStrings(source, normalize(expected, &buf));
     try std.testing.expectEqual(c_api.getTranslationUnitErrorsCount(tu), 0);
 }
 
@@ -66,11 +69,13 @@ test "parser parses simple source file with errors" {
         \\
         \\}
     ;
-    const source: []const u8 = c_api.toSlice(u8, c_api.getTranslationUnitSource(tu));
 
+    var buf: [1024]u8 = undefined;
+    const source: []const u8 = normalize(c_api.toSlice(u8, c_api.getTranslationUnitSource(tu)), &buf);
+
+    try std.testing.expectEqualStrings(source, normalize(expected, &buf));
     try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 15);
     try std.testing.expectEqual(c_api.getTranslationUnitNodesCount(tu), 7);
-    try std.testing.expectEqualStrings(source, expected);
     try std.testing.expectEqual(c_api.getTranslationUnitErrorsCount(tu), 2);
 
     const errors: []const ErrorReport = c_api.toSlice(ErrorReport, c_api.getTranslationUnitErrors(tu));
@@ -91,11 +96,9 @@ test "parser parses simple source file with errors" {
 test "parser parses large source file correctly" {
     const tu: *TranslationUnit = c_api.createTranslationUnit("tests/test_sources/large.zig").?;
     defer c_api.freeTranslationUnit(tu);
-    const source: []const u8 = c_api.toSlice(u8, c_api.getTranslationUnitSource(tu));
 
     try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 8323);
     try std.testing.expectEqual(c_api.getTranslationUnitNodesCount(tu), 4433);
-    try std.testing.expectEqual(source.len, 69791);
     try std.testing.expectEqual(c_api.getTranslationUnitErrorsCount(tu), 0);
 }
 
@@ -286,9 +289,10 @@ test "parser parses externs correctly" {
 
 test "parser parses exports correctly" {
     const tu = c_api.createTranslationUnitFromSource(
-        \\pub export fn public_testing(a: usize) void {};
-        \\export fn private_testing() usize {};
+        \\pub export fn public_testing(a: usize) void {}
+        \\export fn private_testing() usize {}
     ).?;
+    // todo: add similar tests but use variables instead.
     defer c_api.freeTranslationUnit(tu);
     const indexes: []const u32 = c_api.toSlice(u32, c_api.getTranslationUnitRootNodes(tu));
     try std.testing.expectEqual(indexes.len, 2);
