@@ -4,6 +4,7 @@ on:
   create:
     tags:
       - v*
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,8 +12,7 @@ permissions:
 
 jobs:
   build-and-publish:
-    needs: [ tests-ubuntu, tests-windows ]
-    if: github.ref_type == 'tag'
+    if: ${{ github.ref_type == 'tag' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,6 +41,3 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           python -m twine upload --non-interactive dist/*
-
-      - name: Cleanup (optional)
-        run: rm -rf dist build *.egg-info
