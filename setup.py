@@ -27,7 +27,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="xXenvy",
-    url="https://github.com/xXenvy/zyra",
+    url="https://github.com/xXenvy/zyntex",
     project_urls={
         "Source": "https://github.com/xXenvy/zyntex",
         "Tracker": "https://github.com/xXenvy/zyntex/issues",

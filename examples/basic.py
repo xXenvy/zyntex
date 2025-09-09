@@ -7,4 +7,4 @@ src = SourceCode("const result: usize = 15 + 15;")
 variable = cast(VariableDeclaration, src.content[0])
 
 print(variable.name)  # result
-print(variable.const)  # True
+print(variable.is_const)  # True

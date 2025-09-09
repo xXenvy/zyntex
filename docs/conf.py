@@ -11,7 +11,7 @@ import os
 project = 'zyntex'
 copyright = '2025, xXenvy'
 author = 'xXenvy'
-release = "0.0.3"
+release = "0.1.3"
 
 sys.path.insert(0, os.path.abspath(".."))
 
