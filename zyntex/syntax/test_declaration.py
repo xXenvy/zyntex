@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from ..bindings import PyASTNode, NodeTag
 from .lazy_init import LazyInit, lazy_invoke
@@ -10,7 +10,7 @@ class TestDeclaration(INodeElement):
 
     __slots__ = ("_name", "_body")
 
-    def __init__(self, name: Union[str, LazyInit], body: Union[str, LazyInit]) -> None:
+    def __init__(self, name: Union[str, None, LazyInit], body: Union[str, LazyInit]) -> None:
         self._name = name
         self._body = body
 
@@ -26,13 +26,16 @@ class TestDeclaration(INodeElement):
 
     @property
     @lazy_invoke
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
+        """Test name, or `None` for anonymous tests (e.g. `test { ... }`)."""
         assert isinstance(self._name, LazyInit)
         self._name = self._name.node.spelling
+        if self._name == "test":
+            self._name = None
         return self._name
 
     @name.setter
-    def name(self, value: str) -> None:
+    def name(self, value: Optional[str]) -> None:
         self._name = value
 
     @property

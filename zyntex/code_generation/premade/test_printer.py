@@ -15,6 +15,8 @@ class TestPrinter(IDefaultPrintable):
         self._dispatcher = dispatcher
 
     def print(self, target: TestDeclaration) -> str:
+        if target.name is None:
+            return f"test {target.body}"
         return f"test {target.name} {target.body}"
 
     @staticmethod

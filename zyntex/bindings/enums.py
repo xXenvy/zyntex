@@ -181,7 +181,7 @@ class NodeTag(Enum):
 class TokenTag(Enum):
     """
     Bindings to the Zig `std.zig.tokenizer.Token.Tag` enum.
-    Ref: https://github.com/ziglang/zig/blob/0.14.1/lib/std/zig/tokenizer.zig#L68
+    Ref: https://github.com/ziglang/zig/blob/0.15.1/lib/std/zig/tokenizer.zig#L65
     """
     INVALID = 0
     INVALID_PERIODASTERISKS = 1
@@ -263,54 +263,51 @@ class TokenTag(Enum):
     KEYWORD_ANYFRAME = 77
     KEYWORD_ANYTYPE = 78
     KEYWORD_ASM = 79
-    KEYWORD_ASYNC = 80
-    KEYWORD_AWAIT = 81
-    KEYWORD_BREAK = 82
-    KEYWORD_CALLCONV = 83
-    KEYWORD_CATCH = 84
-    KEYWORD_COMPTIME = 85
-    KEYWORD_CONST = 86
-    KEYWORD_CONTINUE = 87
-    KEYWORD_DEFER = 88
-    KEYWORD_ELSE = 89
-    KEYWORD_ENUM = 90
-    KEYWORD_ERRDEFER = 91
-    KEYWORD_ERROR = 92
-    KEYWORD_EXPORT = 93
-    KEYWORD_EXTERN = 94
-    KEYWORD_FN = 95
-    KEYWORD_FOR = 96
-    KEYWORD_IF = 97
-    KEYWORD_INLINE = 98
-    KEYWORD_NOALIAS = 99
-    KEYWORD_NOINLINE = 100
-    KEYWORD_NOSUSPEND = 101
-    KEYWORD_OPAQUE = 102
-    KEYWORD_OR = 103
-    KEYWORD_ORELSE = 104
-    KEYWORD_PACKED = 105
-    KEYWORD_PUB = 106
-    KEYWORD_RESUME = 107
-    KEYWORD_RETURN = 108
-    KEYWORD_LINKSECTION = 109
-    KEYWORD_STRUCT = 110
-    KEYWORD_SUSPEND = 111
-    KEYWORD_SWITCH = 112
-    KEYWORD_TEST = 113
-    KEYWORD_THREADLOCAL = 114
-    KEYWORD_TRY = 115
-    KEYWORD_UNION = 116
-    KEYWORD_UNREACHABLE = 117
-    KEYWORD_USINGNAMESPACE = 118
-    KEYWORD_VAR = 119
-    KEYWORD_VOLATILE = 120
-    KEYWORD_WHILE = 121
+    KEYWORD_BREAK = 80
+    KEYWORD_CALLCONV = 81
+    KEYWORD_CATCH = 82
+    KEYWORD_COMPTIME = 83
+    KEYWORD_CONST = 84
+    KEYWORD_CONTINUE = 85
+    KEYWORD_DEFER = 86
+    KEYWORD_ELSE = 87
+    KEYWORD_ENUM = 88
+    KEYWORD_ERRDEFER = 89
+    KEYWORD_ERROR = 90
+    KEYWORD_EXPORT = 91
+    KEYWORD_EXTERN = 92
+    KEYWORD_FN = 93
+    KEYWORD_FOR = 94
+    KEYWORD_IF = 95
+    KEYWORD_INLINE = 96
+    KEYWORD_NOALIAS = 97
+    KEYWORD_NOINLINE = 98
+    KEYWORD_NOSUSPEND = 99
+    KEYWORD_OPAQUE = 100
+    KEYWORD_OR = 101
+    KEYWORD_ORELSE = 102
+    KEYWORD_PACKED = 103
+    KEYWORD_PUB = 104
+    KEYWORD_RESUME = 105
+    KEYWORD_RETURN = 106
+    KEYWORD_LINKSECTION = 107
+    KEYWORD_STRUCT = 108
+    KEYWORD_SUSPEND = 109
+    KEYWORD_SWITCH = 110
+    KEYWORD_TEST = 111
+    KEYWORD_THREADLOCAL = 112
+    KEYWORD_TRY = 113
+    KEYWORD_UNION = 114
+    KEYWORD_UNREACHABLE = 115
+    KEYWORD_VAR = 116
+    KEYWORD_VOLATILE = 117
+    KEYWORD_WHILE = 118
 
 
 class ErrorTag(Enum):
     """
     Bindings to the Zig `std.zig.Ast.Error.Tag` enum.
-    Ref: https://github.com/ziglang/zig/blob/0.14.1/lib/std/zig/Ast.zig#L2950
+    Ref: https://github.com/ziglang/zig/blob/0.15.1/lib/std/zig/Ast.zig#L2935
 
     These enum values correspond to the error tag identifiers returned by the Zig parser.
     Used to indicate specific kinds of syntax or semantic errors encountered during parsing.
@@ -385,7 +382,7 @@ class ErrorTag(Enum):
 class PrimitiveType(Enum):
     """
     Bindings for Zig primitive types.
-    Ref: https://ziglang.org/documentation/0.14.1/#Primitive-Types
+    Ref: https://ziglang.org/documentation/0.15.1/#Primitive-Types
     """
     i8 = "i8"
     i16 = "i16"

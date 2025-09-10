@@ -12,3 +12,12 @@ class TestTestDeclaration:
         function_decl: TestDeclaration = cast(TestDeclaration, code.content[0])
         assert function_decl.name == "\"empty\""
         assert function_decl.body == "{}"
+
+    def test_anonymous_empty_test(self):
+        from zyntex.syntax import TestDeclaration
+
+        code = SourceCode("test {}")
+        assert len(code.content) == 1
+        function_decl: TestDeclaration = cast(TestDeclaration, code.content[0])
+        assert function_decl.name is None
+        assert function_decl.body == "{}"
