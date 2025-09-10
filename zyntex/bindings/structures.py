@@ -53,8 +53,6 @@ class ASTNode(ctypes.Structure):
         ("index", ctypes.c_int),
         ("tag_index", ctypes.c_int),
         ("main_token", ctypes.c_int),
-        ("lhs", ctypes.c_int),
-        ("rhs", ctypes.c_int),
     ]
 
     def __repr__(self) -> str:
@@ -62,9 +60,7 @@ class ASTNode(ctypes.Structure):
             f"ASTNode("
             f"tag={self.tag}, "
             f"index={self.index}, "
-            f"main_token={self.main_token}, "
-            f"lhs={self.lhs}, "
-            f"rhs={self.rhs})"
+            f"main_token={self.main_token})"
         )
 
     @property

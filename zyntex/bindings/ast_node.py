@@ -71,42 +71,6 @@ class PyASTNode:
         ).to_list(PyString)[0]
 
     @property
-    def rhs_source(self) -> str:
-        """The source text for the node's right-hand side (RHS)."""
-        return self._lib.getNodeSource(
-            self._parent.ptr, self.rhs
-        ).to_list(PyString)[0]
-
-    @property
-    def rhs(self) -> int:
-        """The index of the node right-hand side (RHS)."""
-        return self._node.rhs
-
-    @property
-    def rhs_node(self) -> PyASTNode:
-        """The node's right-hand side (RHS)."""
-        ast_node = self._lib.getTranslationUnitNodeFromIndex(self._parent.ptr, self.rhs)
-        return PyASTNode(parent=self.parent, node=ast_node)
-
-    @property
-    def lhs_source(self) -> str:
-        """The source text for the node's left-hand side (LHS)."""
-        return self._lib.getNodeSource(
-            self._parent.ptr, self.lhs
-        ).to_list(PyString)[0]
-
-    @property
-    def lhs(self) -> int:
-        """The index of the node left-hand side (LHS)."""
-        return self._node.lhs
-
-    @property
-    def lhs_node(self) -> PyASTNode:
-        """The node's left-hand side (LHS)."""
-        ast_node = self._lib.getTranslationUnitNodeFromIndex(self._parent.ptr, self.lhs)
-        return PyASTNode(parent=self.parent, node=ast_node)
-
-    @property
     def type(self) -> Optional[PyASTNode]:
         """The type node assigned to Node. For functions, it's the return type.
         For variable declarations, it specifies the type hint."""

@@ -13,8 +13,7 @@ Planned Features
 
 - **Medium priority**
 
-  - Update Zig parser backend to track the latest stable Zig version
-    (Currently, we're one version behind).
   - Add support to comptime elements parsing (e.g. comptime variable).
+  - Add a simple, real-use example.
 
 - **High priority**

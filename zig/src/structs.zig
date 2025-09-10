@@ -11,8 +11,6 @@ pub const ASTNode = extern struct {
     index: u32,
     tag_index: u32,
     main_token: u32,
-    lhs: u32,
-    rhs: u32,
 };
 
 pub const ASTToken = extern struct {

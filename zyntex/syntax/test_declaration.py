@@ -40,7 +40,7 @@ class TestDeclaration(INodeElement):
     def body(self) -> str:
         """Raw body of the test."""
         assert isinstance(self._body, LazyInit)
-        self._body = self._body.node.rhs_source
+        self._body = self._body.node.body
         return self._body
 
     @body.setter
