@@ -11,8 +11,8 @@ buffer: [:0]const u8,
 gpa_allocator: GPA,
 
 errors: []const structs.ErrorReport,
-nodes: []const structs.ASTNode,
 tokens: []const structs.ASTToken,
+nodes: []const structs.ASTNode,
 
 pub fn initFromFile(file_path: [*:0]const u8) !TranslationUnit {
     var file = try std.fs.cwd().openFile(std.mem.span(file_path), .{ .mode = .read_only });
@@ -27,7 +27,7 @@ pub fn initFromFile(file_path: [*:0]const u8) !TranslationUnit {
         allocator,
         file_stat.size,
         null,
-        1,
+        std.mem.Alignment.@"2",
         0,
     );
     return try initFromSource(buffer);
@@ -59,19 +59,6 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
         };
     }
 
-    const node_count = ast_ptr.nodes.len;
-    const node_copy = try allocator.alloc(structs.ASTNode, node_count);
-    for (0..node_count) |i| {
-        const original_node: Ast.Node = ast_ptr.nodes.get(i);
-        node_copy[i] = .{
-            .index = @intCast(i),
-            .tag_index = @intFromEnum(original_node.tag),
-            .main_token = original_node.main_token,
-            .lhs = original_node.data.lhs,
-            .rhs = original_node.data.rhs,
-        };
-    }
-
     const tokens_count = ast_ptr.tokens.len;
     const tokens_copy = try allocator.alloc(structs.ASTToken, tokens_count);
     for (0..tokens_count) |i| {
@@ -82,11 +69,22 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
         };
     }
 
+    const node_count = ast_ptr.nodes.len;
+    const node_copy = try allocator.alloc(structs.ASTNode, node_count);
+    for (0..node_count) |i| {
+        const original_node: Ast.Node = ast_ptr.nodes.get(i);
+        node_copy[i] = .{
+            .index = @intCast(i),
+            .tag_index = @intFromEnum(original_node.tag),
+            .main_token = original_node.main_token,
+        };
+    }
+
     tu.tree = ast_ptr;
     tu.buffer = heap_source;
     tu.errors = error_slice;
-    tu.nodes = node_copy;
     tu.tokens = tokens_copy;
+    tu.nodes = node_copy;
     return tu;
 }
 
@@ -97,8 +95,8 @@ pub fn deinit(self: *TranslationUnit) void {
 
     allocator.free(self.buffer);
     if (self.errors.len > 0) allocator.free(self.errors);
-    if (self.nodes.len > 0) allocator.free(self.nodes);
     if (self.tokens.len > 0) allocator.free(self.tokens);
+    if (self.nodes.len > 0) allocator.free(self.nodes);
 
     _ = self.gpa_allocator.deinit();
 }

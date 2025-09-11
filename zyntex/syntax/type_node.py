@@ -99,7 +99,7 @@ class TypeNode(INodeElement):
         either a numeric literal or a symbolic name (variable/expression)."""
         assert isinstance(self._array_length, LazyInit)
         if self._array_length.node.tag == NodeTag.ARRAY_TYPE:
-            self._array_length = self._array_length.node.lhs_source
+            self._array_length = self._array_length.node.body
         else:
             self._array_length = None
         return self._array_length
@@ -114,7 +114,9 @@ class TypeNode(INodeElement):
         """Type node of the array, or None if not an array."""
         assert isinstance(self._array_type, LazyInit)
         if self._array_type.node.tag == NodeTag.ARRAY_TYPE:
-            self._array_type = TypeNode.from_node(self._array_type.node.rhs_node)
+            node_type = self._array_type.node.type
+            assert node_type
+            self._array_type = TypeNode.from_node(node_type)
         else:
             self._array_type = None
         return self._array_type
@@ -129,7 +131,9 @@ class TypeNode(INodeElement):
         """The inner type of optional, or None if not optional."""
         assert isinstance(self._optional_type, LazyInit)
         if self._optional_type.node.tag == NodeTag.OPTIONAL_TYPE:
-            self._optional_type = TypeNode.from_node(self._optional_type.node.lhs_node)
+            node_type = self._optional_type.node.type
+            assert node_type is not None
+            self._optional_type = TypeNode.from_node(node_type)
         else:
             self._optional_type = None
         return self._optional_type
@@ -144,7 +148,9 @@ class TypeNode(INodeElement):
         """The pointed-to type, or None if not a pointer."""
         assert isinstance(self._pointer_type, LazyInit)
         if self._pointer_type.node.tag == NodeTag.PTR_TYPE_ALIGNED:
-            self._pointer_type = TypeNode.from_node(self._pointer_type.node.rhs_node)
+            node_type = self._pointer_type.node.type
+            assert node_type is not None
+            self._pointer_type = TypeNode.from_node(node_type)
         else:
             self._pointer_type = None
         return self._pointer_type

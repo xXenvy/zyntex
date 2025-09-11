@@ -6,8 +6,8 @@ const normalize = @import("helpers.zig").normalize;
 const TranslationUnit = @import("../src/translation_unit.zig");
 
 const ErrorReport = structs.ErrorReport;
-const ASTNode = structs.ASTNode;
 const ASTToken = structs.ASTToken;
+const ASTNode = structs.ASTNode;
 const allocator = std.testing.allocator;
 
 test "parser generic slice roundtrip" {
@@ -107,7 +107,7 @@ test "parser parses simple code correctly" {
     defer c_api.freeTranslationUnit(tu);
     const expected = "pub fn main() void {}";
     const source: []const u8 = c_api.toSlice(u8, c_api.getTranslationUnitSource(tu));
-    const nodes: []const ASTNode = c_api.toSlice(ASTNode, c_api.getTranslationUnitNodes(tu));
+    const nodes = c_api.toSlice(ASTNode, c_api.getTranslationUnitNodes(tu));
 
     const fn_node: ASTNode = nodes[1];
     const fn_return_type_node: ASTNode = c_api.getNodeType(tu, fn_node);

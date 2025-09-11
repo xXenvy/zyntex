@@ -94,7 +94,7 @@ def main() -> None:
         level=logging.DEBUG,
         format="%(asctime)s %(levelname)s: %(message)s"
     )
-    assert check_zig_version() == "0.14.1", "Invalid zig version."
+    assert check_zig_version() == "0.15.1", "Invalid zig version."
     logger.info("The zig version is correct.")
 
     out_dir = args.out_dir

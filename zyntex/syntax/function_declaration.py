@@ -85,7 +85,7 @@ class FunctionDeclaration(INodeElement):
         """Raw body of the function declaration. None if the function is declared with extern."""
         assert isinstance(self._body, LazyInit)
         if self._body.node.tag == NodeTag.FN_DECL:
-            self._body = self._body.node.rhs_source
+            self._body = self._body.node.body
         else:
             self._body = None
         return self._body

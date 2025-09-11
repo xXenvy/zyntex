@@ -6,7 +6,7 @@ inspection and modification. Using premade printers, Zyntex can also emit
 Zig code from those Python objects - enabling a full parse -> modify -> print
 workflow.
 
-Currently, it can parse Zig code written for version **0.14.1** - the
+Currently, it can parse Zig code written in version **0.15.1** - the
 supported parsing version will be continuously updated in the future.
 
 Zyntex uses Zig's `std` AST parser as a backend (via native bindings), which

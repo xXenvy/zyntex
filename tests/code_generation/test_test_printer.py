@@ -27,3 +27,7 @@ test "assert example" {
     std.testing.assert(2 + 2 == 4);
 }
 """.strip()
+
+    def test_basic_anonymous_test(self):
+        anonymous_test = TestDeclaration(name=None, body="{ std.debug.print(\"ABC\", .{}); }")
+        assert self.printer.print(anonymous_test) == "test { std.debug.print(\"ABC\", .{}); }"

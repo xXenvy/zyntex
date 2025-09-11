@@ -5,6 +5,8 @@ Zyntex is a Python library that allows you to parse and generate Zig code at a h
 Function bodies and other low-level constructs are currently returned as raw strings.
 Support for deeper elements is planned. Internally, it uses bindings to Zig's std AST parser,
 making it both fast and memory-efficient.
+Currently, it can parse Zig code written in version **0.15.1** - the
+supported parsing version will be continuously updated in the future.
 Important: currently bindings are only available for `windows-x86_64`, `macos-x86_64`, and `linux-x86_64`.
 On other architectures the library will not work. Support for additional targets is planned,
 but low priority.
@@ -18,6 +20,7 @@ and is actively being developed.**
 - Code generation - emitting Zig code from Python objects via premade printers.
 - High-performance, low-memory parsing powered by Zig’s `std` parser.
 - Easy-to-use, Pythonic API designed for inspection Zig code.
+- Zero-dependency - the project requires no external dependencies on either the Zig side or the Python side.
 
 ## Installation
 

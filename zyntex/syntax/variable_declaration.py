@@ -98,10 +98,11 @@ class VariableDeclaration(INodeElement):
     def alignment(self) -> Optional[str]:
         """The explicit Zig alignment for the variable, if present."""
         assert isinstance(self._alignment, LazyInit)
-
-        if self._alignment.node.tag == NodeTag.ALIGNED_VAR_DECL:
-            self._alignment = self._alignment.node.lhs_source
-        elif self._alignment.node.tag in (NodeTag.LOCAL_VAR_DECL, NodeTag.GLOBAL_VAR_DECL):
+        if self._alignment.node.tag in (
+                NodeTag.LOCAL_VAR_DECL,
+                NodeTag.GLOBAL_VAR_DECL,
+                NodeTag.ALIGNED_VAR_DECL
+        ):
             self._alignment = self._alignment.node.align
         else:
             self._alignment = None
@@ -117,7 +118,7 @@ class VariableDeclaration(INodeElement):
         """The raw value of the variable. None if the variable is declared with extern."""
         assert isinstance(self._value, LazyInit)
         if not self.is_extern:
-            self._value = self._value.node.rhs_source
+            self._value = self._value.node.body
         else:
             self._value = None
         return self._value
