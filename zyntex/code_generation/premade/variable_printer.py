@@ -1,5 +1,3 @@
-from typing import Type
-
 from ...syntax import VariableDeclaration
 from ..printer import PrinterDispatcher
 from .default_printer import IDefaultPrintable
@@ -32,5 +30,5 @@ class VariablePrinter(IDefaultPrintable):
         return f"{modifiers}{target.name}{type_hint} = {target.value};"
 
     @staticmethod
-    def target_type() -> Type[VariableDeclaration]:
+    def target_type() -> type[VariableDeclaration]:
         return VariableDeclaration

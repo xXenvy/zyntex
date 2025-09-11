@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Tuple, Type, Optional
+from typing import Optional
 
 from .syntax import INodeElement, FunctionDeclaration, VariableDeclaration, TestDeclaration
 from .bindings import PyTranslationUnit, ErrorReport, get_native_library
@@ -31,14 +31,14 @@ class SourceFile:
         self._unit: Optional[PyTranslationUnit] = None if lazy_parsing else (
             PyTranslationUnit.from_path(lib=get_native_library(), path=file_path)
         )
-        self._content: Optional[List[INodeElement]] = None
-        self._errors: Optional[List[ErrorReport]] = None
+        self._content: Optional[list[INodeElement]] = None
+        self._errors: Optional[list[ErrorReport]] = None
 
     def __repr__(self) -> str:
         return f"SourceFile(path={self.path})"
 
     @property
-    def content(self) -> List[INodeElement]:
+    def content(self) -> list[INodeElement]:
         """A list of top-level elements parsed from the file."""
         if self._content is None:
             self._content = []
@@ -54,7 +54,7 @@ class SourceFile:
         return self._file_path
 
     @property
-    def errors(self) -> List[ErrorReport]:
+    def errors(self) -> list[ErrorReport]:
         """A list of error reports that occurred during parsing this file."""
         if self._errors is None:
             self._errors = self.unit.errors()
@@ -74,6 +74,6 @@ class SourceFile:
         return self._unit
 
     @property
-    def types(self) -> Tuple[Type[INodeElement], ...]:
+    def types(self) -> tuple[type[INodeElement], ...]:
         """Supported top-level node element types."""
         return FunctionDeclaration, VariableDeclaration, TestDeclaration

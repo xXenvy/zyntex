@@ -1,5 +1,3 @@
-from typing import Type
-
 from ...syntax import TestDeclaration
 from ..printer import PrinterDispatcher
 from .default_printer import IDefaultPrintable
@@ -20,5 +18,5 @@ class TestPrinter(IDefaultPrintable):
         return f"test {target.name} {target.body}"
 
     @staticmethod
-    def target_type() -> Type[TestDeclaration]:
+    def target_type() -> type[TestDeclaration]:
         return TestDeclaration

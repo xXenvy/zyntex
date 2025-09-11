@@ -23,7 +23,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8") \
 setup(
     name="zyntex",
     version=str(__version__),
-    description="A high-level Python package to parse Zig code.",
+    description="A high-level Python package to parse and generate Zig code.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="xXenvy",

@@ -1,5 +1,3 @@
-from typing import Type
-
 from ...syntax import FunctionDeclaration
 from ..printer import PrinterDispatcher
 from .default_printer import IDefaultPrintable
@@ -30,5 +28,5 @@ class FunctionPrinter(IDefaultPrintable):
         return f"{modifiers}fn {target.name}({args}) {return_type}{body}"
 
     @staticmethod
-    def target_type() -> Type[FunctionDeclaration]:
+    def target_type() -> type[FunctionDeclaration]:
         return FunctionDeclaration

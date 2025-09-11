@@ -1,4 +1,4 @@
-from typing import Type, cast
+from typing import cast
 
 from ...syntax.type_node import TypeNode
 from ..printer import PrinterDispatcher
@@ -39,5 +39,5 @@ class TypePrinter(IDefaultPrintable):
         return result
 
     @staticmethod
-    def target_type() -> Type[TypeNode]:
+    def target_type() -> type[TypeNode]:
         return TypeNode

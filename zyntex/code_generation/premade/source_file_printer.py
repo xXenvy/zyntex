@@ -1,5 +1,3 @@
-from typing import Type
-
 from ...source_file import SourceFile
 from ..printer import PrinterDispatcher
 from .default_printer import IDefaultPrintable
@@ -20,5 +18,5 @@ class SourceFilePrinter(IDefaultPrintable):
         )
 
     @staticmethod
-    def target_type() -> Type[SourceFile]:
+    def target_type() -> type[SourceFile]:
         return SourceFile

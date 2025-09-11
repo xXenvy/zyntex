@@ -10,7 +10,8 @@ Currently, it can parse Zig code written in version **0.15.1** - the
 supported parsing version will be continuously updated in the future.
 
 Zyntex uses Zig's `std` AST parser as a backend (via native bindings), which
-provides fast and low-memory parsing.
+provides fast and low-memory parsing. Bindings are currently available
+only for x64 processors, so the library will not work on other CPU architectures.
 
 **Be aware that the project is at a very early stage of development
 and is actively being developed.**

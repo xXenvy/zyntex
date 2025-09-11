@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Type, Any
+from typing import Any
 
 from .configuration import PrinterConfiguration
 
@@ -31,13 +31,13 @@ class PrinterDispatcher:
 
     def __init__(self, configuration: PrinterConfiguration = PrinterConfiguration()) -> None:
         self.configuration = configuration
-        self._printers: Dict[Type, IPrinter] = {}
+        self._printers: dict[type, IPrinter] = {}
 
-    def add(self, target_type: Type, target_printer_type: Type[IPrinter]) -> None:
+    def add(self, target_type: type, target_printer_type: type[IPrinter]) -> None:
         """Register a printer for the given node type."""
         self._printers[target_type] = target_printer_type(self)
 
-    def remove(self, target_type: Type) -> None:
+    def remove(self, target_type: type) -> None:
         """Unregister the printer for the given node type."""
         del self._printers[target_type]
 

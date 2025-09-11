@@ -1,4 +1,3 @@
-from typing import List
 from os import walk, path
 
 from .source_file import SourceFile
@@ -17,7 +16,7 @@ class SourceModule:
         return f"SourceModule(dir={self._dir_path})"
 
     @property
-    def files(self) -> List[SourceFile]:
+    def files(self) -> list[SourceFile]:
         """A list of SourceFile for all `.zig` files in the directory."""
         sources = []
         for root, _, files in walk(self._dir_path):

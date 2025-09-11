@@ -1,5 +1,3 @@
-from typing import Type
-
 from ...source_code import SourceCode
 from ..printer import PrinterDispatcher
 from .default_printer import IDefaultPrintable
@@ -20,5 +18,5 @@ class SourceCodePrinter(IDefaultPrintable):
         )
 
     @staticmethod
-    def target_type() -> Type[SourceCode]:
+    def target_type() -> type[SourceCode]:
         return SourceCode

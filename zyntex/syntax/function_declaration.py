@@ -1,4 +1,4 @@
-from typing import Optional, List, Union
+from typing import Optional, Union
 from dataclasses import dataclass
 
 from ..bindings import PyASTNode, NodeTag, PyString
@@ -30,7 +30,7 @@ class FunctionDeclaration(INodeElement):
             name: Union[str, LazyInit],
             body: Union[str, None, LazyInit],
             return_type: Union[TypeNode, LazyInit],
-            params: Union[List[FunctionParam], None, LazyInit] = None,
+            params: Union[list[FunctionParam], None, LazyInit] = None,
             is_public: Union[bool, LazyInit] = False,
             is_extern: Union[bool, LazyInit] = False,
             is_export: Union[bool, LazyInit] = False,
@@ -110,7 +110,7 @@ class FunctionDeclaration(INodeElement):
 
     @property
     @lazy_invoke
-    def params(self) -> List[FunctionParam]:
+    def params(self) -> list[FunctionParam]:
         """List of function parameters."""
         assert isinstance(self._params, LazyInit)
         result = []
@@ -125,7 +125,7 @@ class FunctionDeclaration(INodeElement):
         return self._params
 
     @params.setter
-    def params(self, value: List[FunctionParam]) -> None:
+    def params(self, value: list[FunctionParam]) -> None:
         self._params = value
 
     @property

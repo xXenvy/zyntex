@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, Any
+from typing import Any
 
 from ..printer import IPrinter, PrinterDispatcher
 
@@ -18,7 +18,7 @@ class IDefaultPrintable(IPrinter, ABC):
 
     @staticmethod
     @abstractmethod
-    def target_type() -> Type:
+    def target_type() -> type:
         """The NodeElement this printer handles."""
         raise NotImplementedError
 
