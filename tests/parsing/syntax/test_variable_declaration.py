@@ -1,8 +1,8 @@
 from typing import cast
 
-from zyntex import SourceCode
-from zyntex.syntax import VariableDeclaration
-from zyntex.bindings import PrimitiveType
+from zyntex.parsing.syntax import VariableDeclaration
+from zyntex.parsing.bindings import PrimitiveType
+from zyntex.parsing import SourceCode
 
 
 class TestVariableDeclaration:

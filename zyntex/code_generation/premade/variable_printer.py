@@ -1,16 +1,9 @@
-from ...syntax import VariableDeclaration
-from ..printer import PrinterDispatcher
+from ...parsing.syntax import VariableDeclaration
 from .default_printer import IDefaultPrintable
 
 
 class VariablePrinter(IDefaultPrintable):
     """Printer for Zig variable declarations."""
-
-    def __init__(
-            self,
-            dispatcher: PrinterDispatcher,
-    ):
-        self._dispatcher = dispatcher
 
     def print(self, target: VariableDeclaration) -> str:
         modifiers = "".join(
@@ -25,7 +18,7 @@ class VariablePrinter(IDefaultPrintable):
         type_hint = ""
         if target.type_hint:
             type_hint = f": {self._dispatcher.print(target.type_hint)}"
-        if target.is_extern:
+        if target.is_extern or target.value is None:
             return f"{modifiers}{target.name}{type_hint};"
         return f"{modifiers}{target.name}{type_hint} = {target.value};"
 

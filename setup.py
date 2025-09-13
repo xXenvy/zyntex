@@ -35,7 +35,7 @@ setup(
     license="MIT",
     packages=find_packages(exclude=("tests", "zig")),
     include_package_data=True,
-    package_data={"zyntex": ["bindings/native/*"]},
+    package_data={"zyntex": ["parsing/bindings/native/*"]},
     python_requires=">=3.9",
     install_requires=[],
     classifiers=[

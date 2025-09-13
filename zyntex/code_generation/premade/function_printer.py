@@ -1,16 +1,9 @@
-from ...syntax import FunctionDeclaration
-from ..printer import PrinterDispatcher
+from ...parsing.syntax import FunctionDeclaration
 from .default_printer import IDefaultPrintable
 
 
 class FunctionPrinter(IDefaultPrintable):
     """Printer for Zig function declarations."""
-
-    def __init__(
-            self,
-            dispatcher: PrinterDispatcher,
-    ):
-        self._dispatcher = dispatcher
 
     def print(self, target: FunctionDeclaration) -> str:
         modifiers = "".join(

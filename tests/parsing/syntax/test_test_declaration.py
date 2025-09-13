@@ -1,11 +1,11 @@
 from typing import cast
-from zyntex import SourceCode
+from zyntex.parsing import SourceCode
 
 
 class TestTestDeclaration:
 
     def test_empty_test(self):
-        from zyntex.syntax import TestDeclaration
+        from zyntex.parsing.syntax import TestDeclaration
 
         code = SourceCode("test \"empty\" {}")
         assert len(code.content) == 1
@@ -14,7 +14,7 @@ class TestTestDeclaration:
         assert function_decl.body == "{}"
 
     def test_anonymous_empty_test(self):
-        from zyntex.syntax import TestDeclaration
+        from zyntex.parsing.syntax import TestDeclaration
 
         code = SourceCode("test {}")
         assert len(code.content) == 1

@@ -1,18 +1,11 @@
 from typing import cast
 
-from ...syntax.type_node import TypeNode
-from ..printer import PrinterDispatcher
+from ...parsing.syntax.type_node import TypeNode
 from .default_printer import IDefaultPrintable
 
 
 class TypePrinter(IDefaultPrintable):
     """Printer for Zig type nodes."""
-
-    def __init__(
-            self,
-            dispatcher: PrinterDispatcher,
-    ):
-        self._dispatcher = dispatcher
 
     def print(self, target: TypeNode) -> str:
         result = ""

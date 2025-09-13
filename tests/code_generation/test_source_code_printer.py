@@ -5,8 +5,8 @@ from zyntex.code_generation.premade import (
     TypePrinter
 )
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.syntax import FunctionDeclaration, VariableDeclaration, TypeNode
-from zyntex import SourceCode
+from zyntex.parsing.syntax import FunctionDeclaration, VariableDeclaration, TypeNode
+from zyntex.parsing import SourceCode
 
 
 class TestSourceCodePrinter:
@@ -19,11 +19,11 @@ pub fn testFunc(arg: [ABC]usize) void {
     _ = arg;
 }
 """)
-        dispatcher = PrinterDispatcher()
-        dispatcher.add(FunctionDeclaration, FunctionPrinter)
-        dispatcher.add(VariableDeclaration, VariablePrinter)
-        dispatcher.add(TypeNode, TypePrinter)
-        cls.printer = SourceCodePrinter(dispatcher)
+        cls.dispatcher = PrinterDispatcher()
+        cls.dispatcher.add(FunctionDeclaration, FunctionPrinter)
+        cls.dispatcher.add(VariableDeclaration, VariablePrinter)
+        cls.dispatcher.add(TypeNode, TypePrinter)
+        cls.printer = SourceCodePrinter(cls.dispatcher)
 
     def test_prints_source_code_with_default_configuration(self):
         assert self.printer.print(self.source) == """pub const ABC: comptime_int = 15;
@@ -33,10 +33,9 @@ pub fn testFunc(arg: [ABC]usize) void {
 }"""
 
     def test_prints_source_code_with_custom_line_ending(self):
-        self.printer.dispatcher.configuration.line_ending = "\n"
+        self.dispatcher.configuration.line_ending = "\n"
         assert self.printer.print(self.source) == """pub const ABC: comptime_int = 15;
 pub fn testFunc(arg: [ABC]usize) void {
     _ = arg;
 }"""
-        self.printer.dispatcher.configuration.line_ending = "\n\n"
 

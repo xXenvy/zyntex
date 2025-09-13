@@ -3,8 +3,8 @@ from pathlib import Path
 
 from zyntex.code_generation.premade import VariablePrinter, TypePrinter
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.syntax import VariableDeclaration, TypeNode
-from zyntex import SourceFile
+from zyntex.parsing.syntax import VariableDeclaration, TypeNode
+from zyntex.parsing import SourceFile
 
 
 class TestVariablePrinter:

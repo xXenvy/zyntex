@@ -1,4 +1,4 @@
-from zyntex import SourceModule
+from zyntex.parsing import SourceModule
 from pathlib import Path
 
 

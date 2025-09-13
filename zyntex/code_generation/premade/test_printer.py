@@ -1,16 +1,9 @@
-from ...syntax import TestDeclaration
-from ..printer import PrinterDispatcher
+from ...parsing.syntax import TestDeclaration
 from .default_printer import IDefaultPrintable
 
 
 class TestPrinter(IDefaultPrintable):
     """Printer for Zig test declarations."""
-
-    def __init__(
-            self,
-            dispatcher: PrinterDispatcher,
-    ):
-        self._dispatcher = dispatcher
 
     def print(self, target: TestDeclaration) -> str:
         if target.name is None:

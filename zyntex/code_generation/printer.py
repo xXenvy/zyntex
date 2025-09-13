@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 from .configuration import PrinterConfiguration
 
@@ -7,20 +7,15 @@ from .configuration import PrinterConfiguration
 class IPrinter(ABC):
     """Base interface for all printers.
 
-    Each printer must accept a dispatcher in its constructor
-    and implement `print(target)` to return code for a node."""
+    Each printer receives a dispatcher in its constructor and must implement
+    `print(target)` to produce the output for a node."""
 
-    @abstractmethod
-    def __init__(
-            self,
-            dispatcher: "PrinterDispatcher",
-    ) -> None:
-        raise NotImplementedError
+    def __init__(self, dispatcher: "PrinterDispatcher") -> None:
+        self._dispatcher = dispatcher
 
     @abstractmethod
     def print(self, target: Any) -> str:
         """Produced output of the printer."""
-        raise NotImplementedError
 
 
 class PrinterDispatcher:
@@ -29,8 +24,8 @@ class PrinterDispatcher:
     You can register printers with `add`, remove them with `remove`,
     and use `print` to get code for any supported node."""
 
-    def __init__(self, configuration: PrinterConfiguration = PrinterConfiguration()) -> None:
-        self.configuration = configuration
+    def __init__(self, configuration: Optional[PrinterConfiguration] = None) -> None:
+        self.configuration = configuration or PrinterConfiguration()
         self._printers: dict[type, IPrinter] = {}
 
     def add(self, target_type: type, target_printer_type: type[IPrinter]) -> None:

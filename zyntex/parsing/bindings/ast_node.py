@@ -12,8 +12,6 @@ class PyASTNode:
     """Represents a high-level Python wrapper for a single `ASTNode`.
     Provides convenient accessors for commonly used node information."""
 
-    __slots__ = ("_parent", "_node", "_lib")
-
     def __init__(self, parent: PyTranslationUnit, node: ASTNode) -> None:
         self._parent = parent
         self._node = node

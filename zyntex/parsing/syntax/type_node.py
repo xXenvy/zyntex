@@ -15,15 +15,6 @@ class TypeNode(INodeElement):
     pointer, or constant, and to access related subtypes.
     Distinguishes between primitive and custom (user-defined) types."""
 
-    __slots__ = (
-        "_array_type",
-        "_array_length",
-        "_optional_type",
-        "_pointer_type",
-        "_type",
-        "_const"
-    )
-
     @dataclass
     class CustomType:
         """Represents a non-primitive (user-defined) type name."""
