@@ -3,8 +3,8 @@ from pathlib import Path
 
 from zyntex.code_generation.premade import TestPrinter
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.syntax import TestDeclaration
-from zyntex import SourceFile
+from zyntex.parsing.syntax import TestDeclaration
+from zyntex.parsing import SourceFile
 
 
 class TestTestPrinter:

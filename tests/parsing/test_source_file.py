@@ -1,9 +1,9 @@
 from typing import cast
 from pathlib import Path
 
-from zyntex import SourceFile
-from zyntex.syntax import FunctionDeclaration
-from zyntex.bindings import PrimitiveType
+from zyntex.parsing.syntax import FunctionDeclaration
+from zyntex.parsing.bindings import PrimitiveType
+from zyntex.parsing import SourceFile
 
 
 class TestSourceFile:

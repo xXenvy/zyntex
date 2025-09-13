@@ -2,10 +2,9 @@ API Reference
 =============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    zyntex
-   zyntex_syntax
+   zyntex_parsing/index
    zyntex_code_generation
-   zyntex_bindings

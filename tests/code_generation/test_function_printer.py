@@ -3,8 +3,8 @@ from pathlib import Path
 
 from zyntex.code_generation.premade import FunctionPrinter, TypePrinter
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.syntax import FunctionDeclaration, TypeNode
-from zyntex import SourceFile
+from zyntex.parsing.syntax import FunctionDeclaration, TypeNode
+from zyntex.parsing import SourceFile
 
 
 class TestFunctionPrinter:

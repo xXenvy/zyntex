@@ -1,16 +1,9 @@
-from ...source_file import SourceFile
-from ..printer import PrinterDispatcher
+from ...parsing.source_file import SourceFile
 from .default_printer import IDefaultPrintable
 
 
 class SourceFilePrinter(IDefaultPrintable):
     """Printer for Zig source file."""
-
-    def __init__(
-            self,
-            dispatcher: PrinterDispatcher,
-    ):
-        self._dispatcher = dispatcher
 
     def print(self, target: SourceFile) -> str:
         return f"{self._dispatcher.configuration.line_ending}".join(
