@@ -25,7 +25,7 @@ class VariablePrinter(IDefaultPrintable):
         type_hint = ""
         if target.type_hint:
             type_hint = f": {self._dispatcher.print(target.type_hint)}"
-        if target.is_extern:
+        if target.is_extern or target.value is None:
             return f"{modifiers}{target.name}{type_hint};"
         return f"{modifiers}{target.name}{type_hint} = {target.value};"
 

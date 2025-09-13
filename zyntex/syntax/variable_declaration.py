@@ -10,17 +10,6 @@ from .type_node import TypeNode
 class VariableDeclaration(INodeElement):
     """Represents a Zig variable declaration."""
 
-    __slots__ = (
-        "_name",
-        "_value",
-        "_type_hint",
-        "_alignment",
-        "_is_public",
-        "_is_const",
-        "_is_extern",
-        "_is_export"
-    )
-
     def __init__(
             self,
             name: Union[str, LazyInit],

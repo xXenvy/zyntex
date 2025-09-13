@@ -15,7 +15,6 @@ class PyTranslationUnit:
     Manages parsing, memory management, and provides convenient access
     to the underlying translation unit's resources at a higher level.
     """
-    __slots__ = ("_tu_ptr", "_lib", "_path", "_released")
 
     def __init__(self, lib: CDLL, tu_ptr: Any, path: Optional[str] = None) -> None:
         self._tu_ptr = tu_ptr

@@ -8,8 +8,6 @@ from .node_element import INodeElement
 class TestDeclaration(INodeElement):
     """Represents a Zig test declaration."""
 
-    __slots__ = ("_name", "_body")
-
     def __init__(self, name: Union[str, None, LazyInit], body: Union[str, LazyInit]) -> None:
         self._name = name
         self._body = body

@@ -15,16 +15,6 @@ class FunctionDeclaration(INodeElement):
         name: str
         type: TypeNode
 
-    __slots__ = (
-        "_name",
-        "_body",
-        "_return_type",
-        "_params",
-        "_is_public",
-        "_is_extern",
-        "_is_export"
-    )
-
     def __init__(
             self,
             name: Union[str, LazyInit],
