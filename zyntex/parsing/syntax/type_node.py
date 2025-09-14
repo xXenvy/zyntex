@@ -40,7 +40,6 @@ class TypeNode(INodeElement):
 
     @classmethod
     def from_node(cls, node: PyASTNode) -> "TypeNode":
-        print(node)
         assert cls.is_node_valid(node), "Provided node is not a type."
         lazy = LazyInit(node)
         return cls(
