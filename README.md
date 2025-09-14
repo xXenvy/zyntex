@@ -34,8 +34,8 @@ pip install zyntex
 from typing import cast
 
 from zyntex.code_generation.premade import DefaultCodePrinter
-from zyntex.syntax import VariableDeclaration
-from zyntex import SourceCode
+from zyntex.parsing.syntax import VariableDeclaration
+from zyntex.parsing import SourceCode
 
 code_printer = DefaultCodePrinter()
 src = SourceCode("const result: usize = 15 + 15;")
