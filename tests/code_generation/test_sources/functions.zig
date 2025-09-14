@@ -6,7 +6,7 @@ fn privateTestFunc(x: usize) usize {
     return x;
 }
 
-pub extern fn publicExternTest(a: usize) void;
+pub extern fn publicExternTest(a: usize) !void;
 extern fn privateExternTest() usize;
 
 pub export fn publicExportTest(a: ?*u32, b: *myStruct) void {

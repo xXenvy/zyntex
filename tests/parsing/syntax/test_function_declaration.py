@@ -18,7 +18,7 @@ class TestFunctionDeclaration:
         assert function_decl.body == "{ return 10; }"
         assert function_decl.params == []
         assert function_decl.return_type.is_type()
-        assert function_decl.return_type.const is False
+        assert function_decl.return_type.is_const is False
         assert function_decl.return_type.absolute_type == PrimitiveType.usize
 
     def test_private_function(self):
@@ -32,7 +32,7 @@ class TestFunctionDeclaration:
         assert function_decl.body == "{ const a = 10;\n_ = a; }"
         assert function_decl.params == []
         assert function_decl.return_type.is_type()
-        assert function_decl.return_type.const is False
+        assert function_decl.return_type.is_const is False
         assert function_decl.return_type.absolute_type == PrimitiveType.void
 
     def test_function_params(self):
@@ -46,7 +46,7 @@ class TestFunctionDeclaration:
         assert function_decl.body == "{ return a + b; }"
 
         assert function_decl.return_type.is_type()
-        assert function_decl.return_type.const is False
+        assert function_decl.return_type.is_const is False
         assert function_decl.return_type.absolute_type == PrimitiveType.usize
 
         assert len(function_decl.params) == 2
@@ -54,11 +54,11 @@ class TestFunctionDeclaration:
         assert function_decl.params[1].name == "b"
 
         assert function_decl.params[0].type.is_type()
-        assert function_decl.params[0].type.const is False
+        assert function_decl.params[0].type.is_const is False
         assert function_decl.params[0].type.absolute_type == PrimitiveType.usize
 
         assert function_decl.params[1].type.is_type()
-        assert function_decl.params[1].type.const is False
+        assert function_decl.params[1].type.is_const is False
         assert function_decl.params[1].type.absolute_type == PrimitiveType.usize
 
     def test_function_extern(self):
@@ -73,14 +73,14 @@ class TestFunctionDeclaration:
 
         assert function_decl.return_type.is_optional()
         assert function_decl.return_type.is_type() is False
-        assert function_decl.return_type.const is False
+        assert function_decl.return_type.is_const is False
         assert function_decl.return_type.optional_type.type == PrimitiveType.void
         assert function_decl.return_type.absolute_type == PrimitiveType.void
 
         assert len(function_decl.params) == 1
         assert function_decl.params[0].type.is_pointer()
-        assert function_decl.params[0].type.const is False
-        assert function_decl.params[0].type.pointer_type.const
+        assert function_decl.params[0].type.is_const is False
+        assert function_decl.params[0].type.pointer_type.is_const
         assert function_decl.params[0].type.pointer_type.type == PrimitiveType.u32
         assert function_decl.params[0].type.absolute_type == PrimitiveType.u32
 
@@ -94,7 +94,7 @@ class TestFunctionDeclaration:
         assert function_decl.is_extern is False
         assert function_decl.is_export is True
         assert function_decl.return_type.is_type() is False
-        assert function_decl.return_type.const is False
+        assert function_decl.return_type.is_const is False
         assert function_decl.return_type.is_pointer()
         assert function_decl.return_type.pointer_type.type == PrimitiveType.void
         assert function_decl.return_type.absolute_type == PrimitiveType.void

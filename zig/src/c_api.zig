@@ -370,3 +370,8 @@ pub export fn isNodeEnum(unit: *TranslationUnit, node: ASTNode) callconv(.c) boo
     if (!isNodeContainer(node)) return false;
     return std.mem.eql(u8, unit.tree.tokenSlice(node.main_token), "enum");
 }
+
+pub export fn isNodeErrorUnion(unit: *TranslationUnit, node: ASTNode) callconv(.c) bool {
+    if (node.main_token < 1) return false;
+    return std.mem.eql(u8, unit.tree.tokenSlice(node.main_token - 1), "!");
+}

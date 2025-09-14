@@ -11,8 +11,10 @@ class TypePrinter(IDefaultPrintable):
         result = ""
         current: TypeNode = target
         while True:
+            if current.is_error_union:
+                result += "!"
             if current.is_type():
-                if current.const:
+                if current.is_const:
                     result += "const "
                 result += current.type.value
                 break

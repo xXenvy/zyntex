@@ -56,6 +56,10 @@ class PyASTNode:
         """Whether the node points to an enum."""
         return self._lib.isNodeEnum(self._parent.ptr, self._node)
 
+    def is_error_union(self) -> bool:
+        """Whether the node is a part of an error union."""
+        return self._lib.isNodeErrorUnion(self._parent.ptr, self._node)
+
     @property
     def tag(self) -> NodeTag:
         """The node's tag."""
@@ -67,6 +71,11 @@ class PyASTNode:
         return self._lib.getNodeSpelling(
             self._parent.ptr, self._node
         ).to_list(PyString)[0]
+
+    @property
+    def source(self) -> str:
+        """Raw source of the node."""
+        return self._lib.getNodeSource(self._parent.ptr, self._node.index).to_list(PyString)[0]
 
     @property
     def type(self) -> Optional[PyASTNode]:

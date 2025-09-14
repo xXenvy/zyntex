@@ -27,17 +27,20 @@ class TypeNode(INodeElement):
             optional_type: Union[TypeNode, None, LazyInit] = None,
             pointer_type: Union[TypeNode, None, LazyInit] = None,
             type: Union[PrimitiveType, CustomType, None, LazyInit] = None,
-            const: Union[bool, LazyInit] = False,
+            is_const: Union[bool, LazyInit] = False,
+            is_error_union: Union[bool, LazyInit] = False,
     ) -> None:
         self._array_type = array_type
         self._array_length = array_length
         self._optional_type = optional_type
         self._pointer_type = pointer_type
         self._type = type
-        self._const = const
+        self._is_const = is_const
+        self._is_error_union = is_error_union
 
     @classmethod
     def from_node(cls, node: PyASTNode) -> "TypeNode":
+        print(node)
         assert cls.is_node_valid(node), "Provided node is not a type."
         lazy = LazyInit(node)
         return cls(
@@ -46,7 +49,8 @@ class TypeNode(INodeElement):
             optional_type=lazy,
             pointer_type=lazy,
             type=lazy,
-            const=lazy
+            is_const=lazy,
+            is_error_union=lazy,
         )
 
     @staticmethod
@@ -72,14 +76,25 @@ class TypeNode(INodeElement):
 
     @property
     @lazy_invoke
-    def const(self) -> bool:
-        assert isinstance(self._const, LazyInit)
-        self._const = self._const.node.is_const()
-        return self._const
+    def is_const(self) -> bool:
+        assert isinstance(self._is_const, LazyInit)
+        self._is_const = self._is_const.node.is_const()
+        return self._is_const
 
-    @const.setter
-    def const(self, value: bool) -> None:
-        self._const = value
+    @is_const.setter
+    def is_const(self, value: bool) -> None:
+        self._is_const = value
+
+    @property
+    @lazy_invoke
+    def is_error_union(self) -> bool:
+        assert isinstance(self._is_error_union, LazyInit)
+        self._is_error_union = self._is_error_union.node.is_error_union()
+        return self._is_error_union
+
+    @is_error_union.setter
+    def is_error_union(self, value: bool) -> None:
+        self._is_error_union = value
 
     @property
     @lazy_invoke
