@@ -18,7 +18,7 @@ class TestSourceFile:
         assert function_decl.body == "{}"
 
         assert function_decl.return_type.is_type()
-        assert not function_decl.return_type.const
+        assert not function_decl.return_type.is_const
         assert function_decl.return_type.absolute_type == PrimitiveType.void
 
     @property

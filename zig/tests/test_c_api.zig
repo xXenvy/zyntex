@@ -289,7 +289,7 @@ test "parser parses externs correctly" {
 
 test "parser parses exports correctly" {
     const tu = c_api.createTranslationUnitFromSource(
-        \\pub export fn public_testing(a: usize) void {}
+        \\pub export fn public_testing(a: usize) !void {}
         \\export fn private_testing() usize {}
     ).?;
     // todo: add similar tests but use variables instead.
@@ -305,6 +305,9 @@ test "parser parses exports correctly" {
 
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node_1)), "void");
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node_2)), "usize");
+
+    try std.testing.expectEqual(c_api.isNodeErrorUnion(tu, func_return_type_node_1), true);
+    try std.testing.expectEqual(c_api.isNodeErrorUnion(tu, func_return_type_node_2), false);
 
     try std.testing.expectEqual(c_api.isNodePublic(tu, func_node_1), true);
     try std.testing.expectEqual(c_api.isNodePublic(tu, func_node_2), false);

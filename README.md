@@ -24,7 +24,6 @@ and is actively being developed.**
 - Zero-dependency - the project requires no external dependencies on either the Zig side or the Python side.
 
 ## Installation
-
 ```bash
 pip install zyntex
 ```

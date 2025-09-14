@@ -49,6 +49,7 @@ lib_functions = [
     FunctionSignature("isNodeUnion", ctypes.c_bool, (TranslationUnitPtr, ASTNode)),
     FunctionSignature("isNodeOpaque", ctypes.c_bool, (TranslationUnitPtr, ASTNode)),
     FunctionSignature("isNodeEnum", ctypes.c_bool, (TranslationUnitPtr, ASTNode)),
+    FunctionSignature("isNodeErrorUnion", ctypes.c_bool, (TranslationUnitPtr, ASTNode)),
 ]
 
 

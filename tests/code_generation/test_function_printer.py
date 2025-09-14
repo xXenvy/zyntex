@@ -34,7 +34,7 @@ fn privateTestFunc(x: usize) usize {
     def test_file_extern_functions_print(self):
         public_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[2])
         assert self.printer.print(public_function).replace("\r\n", "\n") == """
-pub extern fn publicExternTest(a: usize) void;""".strip()
+pub extern fn publicExternTest(a: usize) !void;""".strip()
 
         private_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[3])
         assert self.printer.print(private_function) == "extern fn privateExternTest() usize;"
