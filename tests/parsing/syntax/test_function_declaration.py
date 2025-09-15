@@ -36,30 +36,40 @@ class TestFunctionDeclaration:
         assert function_decl.return_type.absolute_type == PrimitiveType.void
 
     def test_function_params(self):
-        code = SourceCode("fn testFunc(a: usize, b: usize) usize { return a + b; }")
+        code = SourceCode("""
+fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a + b;\n}
+""".strip())
         assert len(code.content) == 1
         function_decl: FunctionDeclaration = cast(FunctionDeclaration, code.content[0])
         assert function_decl.name == "testFunc"
         assert function_decl.is_public is False
         assert function_decl.is_extern is False
         assert function_decl.is_export is False
-        assert function_decl.body == "{ return a + b; }"
+        assert function_decl.body == "{    _ = c;\n    return a + b;\n}"
 
         assert function_decl.return_type.is_type()
         assert function_decl.return_type.is_const is False
         assert function_decl.return_type.absolute_type == PrimitiveType.usize
 
-        assert len(function_decl.params) == 2
+        assert len(function_decl.params) == 3
         assert function_decl.params[0].name == "a"
         assert function_decl.params[1].name == "b"
+        assert function_decl.params[2].name == "c"
 
+        assert function_decl.params[0].is_comptime is False
         assert function_decl.params[0].type.is_type()
         assert function_decl.params[0].type.is_const is False
         assert function_decl.params[0].type.absolute_type == PrimitiveType.usize
 
+        assert function_decl.params[1].is_comptime is False
         assert function_decl.params[1].type.is_type()
         assert function_decl.params[1].type.is_const is False
         assert function_decl.params[1].type.absolute_type == PrimitiveType.usize
+
+        assert function_decl.params[2].is_comptime
+        assert function_decl.params[2].type.is_type()
+        assert function_decl.params[2].type.is_const is False
+        assert function_decl.params[2].type.absolute_type == PrimitiveType.u32
 
     def test_function_extern(self):
         code = SourceCode("pub extern fn testing(a: *const u32) ?void;")

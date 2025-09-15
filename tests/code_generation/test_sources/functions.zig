@@ -16,3 +16,5 @@ pub export fn publicExportTest(a: ?*u32, b: *myStruct) void {
 export fn privateExportTest() usize {}
 
 const myStruct = struct {};
+
+fn testFuncParams(abc: ?usize, comptime len: u32) !void {}

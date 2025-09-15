@@ -116,8 +116,9 @@ class NodeParam(ctypes.Structure):
 
     _fields_ = [
         ("name", GenericSlice),
-        ("type", ASTNode)
+        ("type", ASTNode),
+        ("is_comptime", ctypes.c_bool)
     ]
 
     def __repr__(self) -> str:
-        return f"NodeParam(name={self.name}, type={self.type})"
+        return f"NodeParam(name={self.name}, type={self.type}, is_comptime={self.is_comptime})"

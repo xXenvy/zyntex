@@ -21,4 +21,5 @@ pub const ASTToken = extern struct {
 pub const NodeParam = extern struct {
     name: GenericSlice,
     type: ASTNode,
+    is_comptime: bool,
 };

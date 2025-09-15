@@ -14,6 +14,7 @@ class FunctionDeclaration(INodeElement):
     class FunctionParam:
         name: str
         type: TypeNode
+        is_comptime: bool
 
     def __init__(
             self,
@@ -109,6 +110,7 @@ class FunctionDeclaration(INodeElement):
                 FunctionDeclaration.FunctionParam(
                     name=param_data.name.to_list(PyString)[0],
                     type=TypeNode.from_node(PyASTNode(self._params.node.parent, param_data.type)),
+                    is_comptime=param_data.is_comptime,
                 )
             )
         self._params = result
