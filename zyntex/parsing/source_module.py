@@ -45,9 +45,9 @@ class SourceModule:
             use_threading: bool = False,
             max_workers: Optional[int] = None,
     ) -> None:
-        self.lazy_parsing = bool(lazy_parsing)
-        self.use_threading = bool(use_threading)
-        self.max_workers = None if max_workers is None else int(max_workers)
+        self.lazy_parsing = lazy_parsing
+        self.use_threading = use_threading
+        self.max_workers = None if max_workers is None else max_workers
 
         self._dir_path = dir_path
 
