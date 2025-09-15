@@ -27,7 +27,6 @@ class SourceCode:
 
         .. versionadded:: 0.1.3
     """
-    __slots__ = ("_unit", "_source", "_content", "_errors")
 
     def __init__(self, source: str, lazy_parsing: bool = False) -> None:
         self._source = source

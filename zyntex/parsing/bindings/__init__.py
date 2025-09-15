@@ -4,7 +4,7 @@ from .structures import (
 )
 from .translation_unit import PyTranslationUnit, TranslationUnitPtr
 from .enums import NodeTag, TokenTag, ErrorTag, PrimitiveType
-from .native import load_native_library, get_native_library
+from .native import init_native_library, get_native_library
 from .ast_node import PyASTNode
 
 
@@ -23,6 +23,6 @@ __all__ = (
     "ErrorTag",
     "PrimitiveType",
     "PyASTNode",
-    "load_native_library",
+    "init_native_library",
     "get_native_library"
 )
