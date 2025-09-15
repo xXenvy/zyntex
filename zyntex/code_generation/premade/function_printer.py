@@ -14,7 +14,9 @@ class FunctionPrinter(IDefaultPrintable):
             ) if condition
         )
         args = ", ".join(
-            f"{param.name}: {self._dispatcher.print(param.type)}" for param in target.params
+            f"{'comptime ' if param.is_comptime else ''}{param.name}: "
+            f"{self._dispatcher.print(param.type)}"
+            for param in target.params
         )
         return_type = self._dispatcher.print(target.return_type)
         body = f" {target.body}" if target.body is not None else ";"

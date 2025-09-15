@@ -13,7 +13,6 @@ Planned Features
 
 - **Medium priority**
 
-  - Add support to comptime elements parsing (e.g. comptime variable).
   - Add a simple, real-use example.
 
 - **High priority**

@@ -49,3 +49,9 @@ pub export fn publicExportTest(a: ?*u32, b: *myStruct) void {
 
         private_function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[5])
         assert self.printer.print(private_function) == "export fn privateExportTest() usize {}"
+
+    def test_file_function_params_print(self):
+        function: FunctionDeclaration = cast(FunctionDeclaration, self.file.content[7])
+        assert self.printer.print(function).replace("\r\n", "\n") == """
+fn testFuncParams(abc: ?usize, comptime len: u32) !void {}
+""".strip()

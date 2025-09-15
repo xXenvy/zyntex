@@ -261,6 +261,11 @@ pub export fn getNodeParams(
         out[i] = .{
             .name = makeSlice(u8, param_name.ptr, param_name.len),
             .type = param_node,
+            .is_comptime = param_node.main_token > 2 and std.mem.eql(
+                u8,
+                unit.tree.tokenSlice(param_node.main_token - 3),
+                "comptime",
+            ),
         };
         i += 1;
     }

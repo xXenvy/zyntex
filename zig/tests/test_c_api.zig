@@ -195,7 +195,8 @@ test "parser parses root nodes correctly" {
 
 test "parser parses function params correctly" {
     const tu = c_api.createTranslationUnitFromSource(
-        \\pub fn testFunc(a: usize, b: usize) usize {
+        \\pub fn testFunc(a: usize, b: usize, comptime len: u32) usize {
+        \\  _ = len;
         \\  return a + b;
         \\}
     ).?;
@@ -211,17 +212,23 @@ test "parser parses function params correctly" {
     try std.testing.expectEqual(false, c_api.isNodeContainer(func_node));
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_node)), "testFunc");
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node)), "usize");
-    try std.testing.expectEqual(2, c_api.getNodeParamsCount(tu, func_node));
+    try std.testing.expectEqual(3, c_api.getNodeParamsCount(tu, func_node));
 
-    var params: [2]c_api.NodeParam = undefined;
+    var params: [3]c_api.NodeParam = undefined;
     const got = c_api.getNodeParams(tu, func_node, @ptrCast(&params[0]), params.len);
-    try std.testing.expectEqual(2, got);
+    try std.testing.expectEqual(3, got);
 
     try std.testing.expectEqualStrings(c_api.toSlice(u8, params[0].name), "a");
     try std.testing.expectEqualStrings(c_api.toSlice(u8, params[1].name), "b");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, params[2].name), "len");
 
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, params[0].type)), "usize");
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, params[1].type)), "usize");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, params[2].type)), "u32");
+
+    try std.testing.expectEqual(params[0].is_comptime, false);
+    try std.testing.expectEqual(params[1].is_comptime, false);
+    try std.testing.expectEqual(params[2].is_comptime, true);
 }
 
 test "parser parses node types correctly" {
