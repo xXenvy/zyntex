@@ -63,7 +63,7 @@ def get_lib_ext() -> str:
 
 
 def init_native_library(lib_dir: Optional[str] = None) -> None:
-    global _lib_instance
+    global _lib_instance  # pylint: disable=global-statement
     if _lib_instance is not None:
         return
 
@@ -80,7 +80,6 @@ def init_native_library(lib_dir: Optional[str] = None) -> None:
 
 
 def get_native_library(lib_dir: Optional[str] = None) -> ctypes.CDLL:
-    global _lib_instance  # pylint: disable=global-statement
     if _lib_instance is None:
         init_native_library(lib_dir)
         assert _lib_instance is not None, "Failed to load native library."
