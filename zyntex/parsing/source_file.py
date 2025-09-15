@@ -23,8 +23,6 @@ class SourceFile:
         .. versionadded:: 0.1.3
     """
 
-    __slots__ = ("_unit", "_file_path", "_content", "_errors")
-
     def __init__(self, file_path: str, lazy_parsing: bool = False) -> None:
         self._file_path = file_path
 

@@ -62,7 +62,11 @@ def get_lib_ext() -> str:
     raise ValueError(f"Invalid platform: '{platform}'.")
 
 
-def load_native_library(lib_dir: Optional[str] = None) -> ctypes.CDLL:
+def init_native_library(lib_dir: Optional[str] = None) -> None:
+    global _lib_instance  # pylint: disable=global-statement
+    if _lib_instance is not None:
+        return
+
     lib_ext: str = get_lib_ext()
     path = lib_dir or os.path.join(os.path.dirname(os.path.realpath(__file__)), "native")
     ctypes_lib = ctypes.CDLL(f"{path}/clib.{lib_ext}")
@@ -71,11 +75,12 @@ def load_native_library(lib_dir: Optional[str] = None) -> ctypes.CDLL:
         lib_func = getattr(ctypes_lib, func.name)
         setattr(lib_func, "argtypes", func.arg_types)
         setattr(lib_func, "restype", func.return_type)
-    return ctypes_lib
+
+    _lib_instance = ctypes_lib
 
 
 def get_native_library(lib_dir: Optional[str] = None) -> ctypes.CDLL:
-    global _lib_instance  # pylint: disable=global-statement
     if _lib_instance is None:
-        _lib_instance = load_native_library(lib_dir)
+        init_native_library(lib_dir)
+        assert _lib_instance is not None, "Failed to load native library."
     return _lib_instance
