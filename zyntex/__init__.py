@@ -11,4 +11,4 @@ class Version:
         return f"{self.major}.{self.minor}.{self.patch}"
 
 
-__version__ = Version(0, 1, 3)
+__version__ = Version(0, 2, 3)
