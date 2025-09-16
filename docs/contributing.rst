@@ -6,7 +6,7 @@ Requirements
 
 - Python **>= 3.9** - minimal runtime requirement for the project.
 - CPU architecture: **x86_64**.
-- Zig == **0.14.1** - required for building native libraries.
+- Zig == **0.15.1** - required for building native libraries.
 
 .. important::
     Building the documentation locally requires **Python >= 3.11**.
@@ -39,7 +39,7 @@ Quickstart
 Building native libraries (Zig)
 -------------------------------
 
-1. Install Zig 0.14.1 (download from the Zig website or use your package manager).
+1. Install Zig 0.15.1 (download from the Zig website or use your package manager).
 2. Verify Zig's version:
 
    .. code-block:: bash
