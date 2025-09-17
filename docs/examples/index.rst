@@ -5,4 +5,4 @@ Examples
    :maxdepth: 3
    :caption: Contents:
 
-   basic
+   zig_code_linter
