@@ -13,7 +13,8 @@ Planned Features
 
 - **Medium priority**
 
+  - Expose comment inspection API.
+  - Full support for zig types (currently, an AssertionError is raised for more complex types).
   - Add support for additional CPU architectures.
-  - Add a simple, real-use example.
 
 - **High priority**
