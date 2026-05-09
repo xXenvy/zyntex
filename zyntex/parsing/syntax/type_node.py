@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import chain
 from typing import Optional, cast, Union
 
 from ..bindings import PyASTNode, NodeTag, PrimitiveType
@@ -26,6 +27,10 @@ class TypeNode(INodeElement):
         access_chain: list[str]
         type_name: str
 
+        @property
+        def value(self) -> str:
+            return ".".join(chain(self.access_chain, (self.type_name,)))
+
     def __init__(
             self,
             array_type: Union[TypeNode, None, LazyInit] = None,
@@ -46,7 +51,9 @@ class TypeNode(INodeElement):
 
     @classmethod
     def from_node(cls, node: PyASTNode) -> "TypeNode":
-        assert cls.is_node_valid(node), "Provided node is not a type."
+        assert cls.is_node_valid(node), (
+            f'{node.tag} node is not a type.\n"{node.source}"'
+        )
         lazy = LazyInit(node)
         return cls(
             array_type=lazy,
