@@ -1,6 +1,7 @@
 from typing import cast
 
 from zyntex.parsing.syntax import VariableDeclaration
+from zyntex.parsing.syntax import TypeNode
 from zyntex.parsing.bindings import PrimitiveType
 from zyntex.parsing import SourceCode
 
@@ -83,4 +84,16 @@ class TestVariableDeclaration:
         assert variable_decl.is_export is False
         assert variable_decl.is_extern is True
         assert variable_decl.value is None
+        assert variable_decl.alignment is None
+
+    def test_variable_declaration_with_attribute_type_hint(self):
+        code = SourceCode("pub var allocator: heap.Allocator = allocator.allocator;")
+        variable_decl: VariableDeclaration = cast(VariableDeclaration, code.content[0])
+        assert variable_decl.name == "allocator"
+        assert variable_decl.is_const is False
+        assert variable_decl.is_public is True
+        assert variable_decl.type_hint.absolute_type == TypeNode.FieldAccessType(["heap"], "Allocator")
+        assert variable_decl.is_export is False
+        assert variable_decl.is_extern is False
+        assert variable_decl.value == "allocator.allocator"
         assert variable_decl.alignment is None

@@ -20,6 +20,12 @@ class TypeNode(INodeElement):
         """Represents a non-primitive (user-defined) type name."""
         value: str
 
+    @dataclass
+    class FieldAccessType:
+        """Represents a type referenced through attribute access."""
+        access_chain: list[str]
+        type_name: str
+
     def __init__(
             self,
             array_type: Union[TypeNode, None, LazyInit] = None,
@@ -58,7 +64,8 @@ class TypeNode(INodeElement):
             NodeTag.OPTIONAL_TYPE,
             NodeTag.ARRAY_TYPE,
             NodeTag.IDENTIFIER,
-            NodeTag.PTR_TYPE_ALIGNED
+            NodeTag.PTR_TYPE_ALIGNED,
+            NodeTag.FIELD_ACCESS
         )
 
     def is_array(self) -> bool:
@@ -166,7 +173,7 @@ class TypeNode(INodeElement):
 
     @property
     @lazy_invoke
-    def type(self) -> Optional[PrimitiveType | CustomType]:
+    def type(self) -> Optional[PrimitiveType | CustomType | FieldAccessType]:
         """Immediate type as PrimitiveType or CustomType, if identifier."""
         assert isinstance(self._type, LazyInit)
         if self._type.node.tag == NodeTag.IDENTIFIER:
@@ -175,6 +182,9 @@ class TypeNode(INodeElement):
                 self._type = PrimitiveType(value)
             except ValueError:
                 self._type = self.CustomType(value)
+        elif self._type.node.tag == NodeTag.FIELD_ACCESS:
+            *access_chain, type_name = self._type.node.source.split(".")
+            self._type = self.FieldAccessType(access_chain, type_name)
         else:
             self._type = None
         return self._type

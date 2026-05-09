@@ -7,10 +7,11 @@ from shutil import copy2, rmtree
 
 logger = logging.getLogger(__name__)
 
+zig = "C:\\Users\\argma\\dev\\zig-x86_64-windows-0.15.1\\zig"
 
 def check_zig_version() -> str:
     try:
-        result = subprocess.run(["zig", "version"], capture_output=True, text=True)
+        result = subprocess.run([zig, "version"], capture_output=True, text=True)
     except FileNotFoundError:
         raise RuntimeError("Zig is not installed or not found in PATH.")
 
@@ -27,7 +28,7 @@ def check_zig_version() -> str:
 
 
 def run_build(release_mode: bool) -> None:
-    args = ["zig", "build", "--summary", "all"]
+    args = [zig, "build", "--summary", "all"]
     if release_mode:
         args.append("--release=fast")
 
