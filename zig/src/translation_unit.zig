@@ -2,47 +2,42 @@ const std = @import("std");
 const structs = @import("structs.zig");
 
 const Ast = std.zig.Ast;
-const GPA = std.heap.GeneralPurposeAllocator(.{ .safety = true });
 
 pub const TranslationUnit = @This();
 
 tree: *Ast,
 buffer: [:0]const u8,
-gpa_allocator: GPA,
+arena: std.heap.ArenaAllocator,
 
 errors: []const structs.ErrorReport,
 tokens: []const structs.ASTToken,
 nodes: []const structs.ASTNode,
 
 pub fn initFromFile(file_path: [*:0]const u8) !TranslationUnit {
-    var file = try std.fs.cwd().openFile(std.mem.span(file_path), .{ .mode = .read_only });
-    defer file.close();
-    const file_stat = try file.stat();
-
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    const allocator = arena.allocator();
-
-    const buffer = try file.readToEndAllocOptions(
-        allocator,
-        file_stat.size,
-        null,
-        std.mem.Alignment.@"2",
+    var io_backend = std.Io.Threaded.init(std.heap.page_allocator, .{});
+    defer io_backend.deinit();
+    const buffer = try std.Io.Dir.cwd().readFileAllocOptions(
+        io_backend.io(),
+        std.mem.span(file_path),
+        std.heap.page_allocator,
+        .unlimited,
+        .of(u8),
         0,
     );
+    defer std.heap.page_allocator.free(buffer);
     return try initFromSource(buffer);
 }
 
 pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
-    var tu: TranslationUnit = undefined;
-    tu.gpa_allocator = GPA{};
-    const allocator = tu.gpa_allocator.allocator();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    errdefer arena.deinit();
+    const allocator = arena.allocator();
 
     // Make a copy on the heap, since AST keeps a reference to the source.
-    const heap_source = try allocator.dupeZ(u8, std.mem.span(source));
+    const heap_source = try allocator.dupeSentinel(u8, std.mem.span(source), 0);
 
     const ast_ptr = try allocator.create(std.zig.Ast);
-    ast_ptr.* = try std.zig.Ast.parse(allocator, heap_source, .zig);
+    ast_ptr.* = try std.zig.Ast.parse(allocator, heap_source, .{ .mode = .zig });
 
     const internal_errors: []const std.zig.Ast.Error = ast_ptr.errors;
     const count = internal_errors.len;
@@ -52,7 +47,7 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
         const src = internal_errors[i];
         const dest = &error_slice[i];
         dest.* = .{
-            .tag_index = @intFromEnum(src.tag),
+            .tag_index = @backingInt(src.tag),
             .is_note = src.is_note,
             .token_is_prev = src.token_is_prev,
             .token_index = @intCast(src.token),
@@ -64,7 +59,7 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
     for (0..tokens_count) |i| {
         const original_token = ast_ptr.tokens.get(i);
         tokens_copy[i] = .{
-            .tag_index = @intFromEnum(original_token.tag),
+            .tag_index = @backingInt(original_token.tag),
             .start = original_token.start,
         };
     }
@@ -75,28 +70,22 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
         const original_node: Ast.Node = ast_ptr.nodes.get(i);
         node_copy[i] = .{
             .index = @intCast(i),
-            .tag_index = @intFromEnum(original_node.tag),
+            .tag_index = @backingInt(original_node.tag),
             .main_token = original_node.main_token,
         };
     }
 
-    tu.tree = ast_ptr;
-    tu.buffer = heap_source;
-    tu.errors = error_slice;
-    tu.tokens = tokens_copy;
-    tu.nodes = node_copy;
-    return tu;
+    return .{
+        .arena = arena,
+        .tree = ast_ptr,
+        .buffer = heap_source,
+        .errors = error_slice,
+        .tokens = tokens_copy,
+        .nodes = node_copy,
+    };
 }
 
 pub fn deinit(self: *TranslationUnit) void {
-    const allocator = self.gpa_allocator.allocator();
-    self.tree.deinit(allocator);
-    allocator.destroy(self.tree);
-
-    allocator.free(self.buffer);
-    if (self.errors.len > 0) allocator.free(self.errors);
-    if (self.tokens.len > 0) allocator.free(self.tokens);
-    if (self.nodes.len > 0) allocator.free(self.nodes);
-
-    _ = self.gpa_allocator.deinit();
+    self.arena.deinit();
+    self.* = undefined;
 }

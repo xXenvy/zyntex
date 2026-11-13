@@ -2,11 +2,11 @@
 ![Downloads](https://img.shields.io/pypi/dm/zyntex?style=flat-square&color=%234287f5)
 ![License](https://img.shields.io/github/license/xXenvy/zyntex?style=flat-square&color=%234287f5)
 ![Python Version](https://img.shields.io/pypi/pyversions/zyntex?style=flat-square&color=%234287f5)
-![Zig](https://img.shields.io/badge/zig-v0.15.1-0074C1?style=flat-square&?logo=zig&logoColor=white&color=%234287f5)
+![Zig](https://img.shields.io/badge/zig-v0.17.1-0074C1?style=flat-square&?logo=zig&logoColor=white&color=%234287f5)
 
 Zyntex is a Python library that allows you to parse and generate Zig code at a high level.
 Function bodies and other low-level elements are currently returned as raw strings.
-Currently, it can parse Zig code written in version **0.15.1** - the
+Currently, it can parse Zig code written in version **0.17.1** - the
 supported parsing version will be continuously updated in the future.
 
 Internally, it uses bindings to Zig's std AST parser, making it both fast and memory-efficient.

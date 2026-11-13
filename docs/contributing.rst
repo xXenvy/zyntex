@@ -6,7 +6,7 @@ Requirements
 
 - Python **>= 3.9** - minimal runtime requirement for the project.
 - CPU architecture: **x86_64**.
-- Zig == **0.15.1** - required for building native libraries.
+- Zig == **0.17.1** - required for building native libraries.
 
 .. important::
     Building the documentation locally requires **Python >= 3.11**.
@@ -39,7 +39,7 @@ Quickstart
 Building native libraries (Zig)
 -------------------------------
 
-1. Install Zig 0.15.1 (download from the Zig website or use your package manager).
+1. Install Zig 0.17.1 (download from the Zig website or use your package manager).
 2. Verify Zig's version:
 
    .. code-block:: bash
@@ -54,6 +54,19 @@ Building native libraries (Zig)
 
    .. note::
       If you make changes to the **C-API**, you must rebuild the libraries afterwards.
+
+   Python AST enums are generated from Zig's definitions. When upgrading Zig, update
+   the version pins and regenerate the enums before rebuilding:
+
+   .. code-block:: bash
+
+      cd zig
+      zig build bindings --summary all
+      zig build test --summary all
+
+   ``zig build bindings`` checks the enums and generates them only if missing or
+   out of date. Every ``zig build test`` run checks.
+   Missing or outdated enums cause the test build to fail.
 
 Running tests
 -------------
