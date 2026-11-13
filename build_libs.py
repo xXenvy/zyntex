@@ -6,6 +6,7 @@ from argparse import ArgumentParser, Namespace
 from shutil import copy2, rmtree
 
 logger = logging.getLogger(__name__)
+ZIG_VERSION = "0.17.1"
 
 
 def check_zig_version() -> str:
@@ -23,13 +24,15 @@ def check_zig_version() -> str:
 
     version = (result.stdout or "").strip()
     logger.info("Found Zig version: %s", version)
+    if version != ZIG_VERSION:
+        raise RuntimeError(f"Zig {ZIG_VERSION} is required; found {version!r}.")
     return version
 
 
 def run_build(release_mode: bool) -> None:
-    args = ["zig", "build", "--summary", "all"]
+    args = ["zig", "build", "install", "--summary", "all"]
     if release_mode:
-        args.append("--release=fast")
+        args.append("-Doptimize=ReleaseFast")
 
     logger.info("Running: %s", " ".join(args))
     result = subprocess.run(args, cwd="zig")
@@ -94,7 +97,7 @@ def main() -> None:
         level=logging.DEBUG,
         format="%(asctime)s %(levelname)s: %(message)s"
     )
-    assert check_zig_version() == "0.15.1", "Invalid zig version."
+    check_zig_version()
     logger.info("The zig version is correct.")
 
     out_dir = args.out_dir

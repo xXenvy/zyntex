@@ -34,13 +34,19 @@ pub fn toSlice(comptime T: type, gs: GenericSlice) []const T {
 
 pub export fn createTranslationUnit(file_path: [*:0]const u8) callconv(.c) ?*TranslationUnit {
     const unit_ptr = allocator.create(TranslationUnit) catch return null;
-    unit_ptr.* = TranslationUnit.initFromFile(file_path) catch return null;
+    unit_ptr.* = TranslationUnit.initFromFile(file_path) catch {
+        allocator.destroy(unit_ptr);
+        return null;
+    };
     return unit_ptr;
 }
 
 pub export fn createTranslationUnitFromSource(source: [*:0]const u8) callconv(.c) ?*TranslationUnit {
     const unit_ptr = allocator.create(TranslationUnit) catch return null;
-    unit_ptr.* = TranslationUnit.initFromSource(source) catch return null;
+    unit_ptr.* = TranslationUnit.initFromSource(source) catch {
+        allocator.destroy(unit_ptr);
+        return null;
+    };
     return unit_ptr;
 }
 
@@ -87,7 +93,7 @@ pub export fn freeTranslationUnit(unit: *TranslationUnit) callconv(.c) void {
 }
 
 pub export fn getNodeSpelling(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     var token_index = node.main_token;
 
     switch (tag) {
@@ -103,7 +109,7 @@ pub export fn getNodeSpelling(unit: *TranslationUnit, node: ASTNode) callconv(.c
         => token_index += 1,
 
         .test_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index));
+            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index)));
             if (node_data.opt_token_and_node[0].unwrap()) |position| {
                 token_index = position;
             }
@@ -115,123 +121,62 @@ pub export fn getNodeSpelling(unit: *TranslationUnit, node: ASTNode) callconv(.c
 }
 
 pub export fn getNodeSource(unit: *TranslationUnit, node_index: u32) callconv(.c) GenericSlice {
-    const source: []const u8 = unit.tree.getNodeSource(@enumFromInt(node_index));
+    const source: []const u8 = unit.tree.getNodeSource(@fromBackingInt(@intCast(node_index)));
     return makeSlice(u8, source.ptr, source.len);
 }
 
 pub export fn getNodeType(unit: *TranslationUnit, node: ASTNode) callconv(.c) ASTNode {
-    const tag: Tag = @enumFromInt(node.tag_index);
-    switch (tag) {
-        .simple_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).opt_node_and_opt_node;
-            if (node_data[0].unwrap()) |type_node| {
-                return getTranslationUnitNodeFromIndex(unit, @intFromEnum(type_node));
-            }
-            return node;
-        },
-        .local_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).extra_and_opt_node;
-            const extra = unit.tree.extraData(node_data[0], Ast.Node.LocalVarDecl);
-            return getTranslationUnitNodeFromIndex(unit, @intFromEnum(extra.type_node));
-        },
-        .global_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).extra_and_opt_node;
-            const extra = unit.tree.extraData(node_data[0], Ast.Node.GlobalVarDecl);
-            return getTranslationUnitNodeFromIndex(unit, @intFromEnum(extra.type_node));
-        },
-        .fn_proto,
-        .fn_proto_one,
-        .fn_proto_multi,
-        => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).extra_and_opt_node;
-            if (node_data[1].unwrap()) |return_node| {
-                return getTranslationUnitNodeFromIndex(unit, @intFromEnum(return_node));
-            }
-            return node;
-        },
-        .fn_proto_simple => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).opt_node_and_opt_node;
-            if (node_data[1].unwrap()) |return_node| {
-                return getTranslationUnitNodeFromIndex(unit, @intFromEnum(return_node));
-            }
-            return node;
-        },
-        .fn_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).node_and_node;
-            return getNodeType(unit, getTranslationUnitNodeFromIndex(unit, @intFromEnum(node_data[0])));
-        },
-        .array_type => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).node_and_node;
-            return getTranslationUnitNodeFromIndex(unit, @intFromEnum(node_data[1]));
-        },
-        .optional_type => {
-            const index = unit.tree.nodeData(@enumFromInt(node.index)).node;
-            return getTranslationUnitNodeFromIndex(unit, @intFromEnum(index));
-        },
-        .ptr_type_aligned => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).opt_node_and_node;
-            return getTranslationUnitNodeFromIndex(unit, @intFromEnum(node_data[1]));
-        },
-        else => return node,
+    const index: Ast.Node.Index = @fromBackingInt(@intCast(node.index));
+    if (unit.tree.fullVarDecl(index)) |decl| {
+        if (decl.ast.type_node.unwrap()) |type_node| {
+            return unit.nodes[@backingInt(type_node)];
+        }
+        return node;
     }
+    var buffer: [1]Ast.Node.Index = undefined;
+    if (unit.tree.fullFnProto(&buffer, index)) |proto| {
+        if (proto.ast.return_type.unwrap()) |return_type| {
+            return unit.nodes[@backingInt(return_type)];
+        }
+        return node;
+    }
+    const data = unit.tree.nodeData(index);
+    const type_index: Ast.Node.Index = switch (unit.tree.nodeTag(index)) {
+        .array_type => data.node_and_node[1],
+        .optional_type => data.node,
+        .ptr_type_aligned => data.opt_node_and_node[1],
+        else => return node,
+    };
+    return unit.nodes[@backingInt(type_index)];
 }
 
 pub export fn getNodeAlign(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
-    const tag: Tag = @enumFromInt(node.tag_index);
-    switch (tag) {
-        .global_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).extra_and_opt_node;
-            const extra = unit.tree.extraData(node_data[0], Ast.Node.GlobalVarDecl);
-            return getNodeSource(unit, @intFromEnum(extra.align_node));
-        },
-        .local_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).extra_and_opt_node;
-            const extra = unit.tree.extraData(node_data[0], Ast.Node.LocalVarDecl);
-            return getNodeSource(unit, @intFromEnum(extra.align_node));
-        },
-        .aligned_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).node_and_opt_node;
-            return getNodeSource(unit, @intFromEnum(node_data[0]));
-        },
-        else => return .{ .ptr = null, .len = 0 },
-    }
+    const decl = unit.tree.fullVarDecl(@fromBackingInt(@intCast(node.index))) orelse
+        return .{ .ptr = null, .len = 0 };
+    const align_node = decl.ast.align_node.unwrap() orelse
+        return .{ .ptr = null, .len = 0 };
+    return getNodeSource(unit, @backingInt(align_node));
 }
 
 pub export fn getNodeBody(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    if (unit.tree.fullVarDecl(@fromBackingInt(@intCast(node.index)))) |decl| {
+        const init_node = decl.ast.init_node.unwrap() orelse
+            return .{ .ptr = null, .len = 0 };
+        return getNodeSource(unit, @backingInt(init_node));
+    }
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     switch (tag) {
         .fn_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).node_and_node;
-            return getNodeSource(unit, @intFromEnum(node_data[1]));
+            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index))).node_and_node;
+            return getNodeSource(unit, @backingInt(node_data[1]));
         },
         .test_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).opt_token_and_node;
-            return getNodeSource(unit, @intFromEnum(node_data[1]));
+            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index))).opt_token_and_node;
+            return getNodeSource(unit, @backingInt(node_data[1]));
         },
         .array_type => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).node_and_node;
-            return getNodeSource(unit, @intFromEnum(node_data[0]));
-        },
-        .simple_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).opt_node_and_opt_node;
-            if (node_data[1].unwrap()) |body| {
-                return getNodeSource(unit, @intFromEnum(body));
-            }
-            return .{ .ptr = null, .len = 0 };
-        },
-        .local_var_decl, .global_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).extra_and_opt_node;
-            if (node_data[1].unwrap()) |body| {
-                return getNodeSource(unit, @intFromEnum(body));
-            }
-            return .{ .ptr = null, .len = 0 };
-        },
-        .aligned_var_decl => {
-            const node_data = unit.tree.nodeData(@enumFromInt(node.index)).node_and_opt_node;
-            if (node_data[1].unwrap()) |body| {
-                return getNodeSource(unit, @intFromEnum(body));
-            }
-            return .{ .ptr = null, .len = 0 };
+            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index))).node_and_node;
+            return getNodeSource(unit, @backingInt(node_data[0]));
         },
         else => return .{ .ptr = null, .len = 0 },
     }
@@ -239,7 +184,7 @@ pub export fn getNodeBody(unit: *TranslationUnit, node: ASTNode) callconv(.c) Ge
 
 pub export fn getNodeParamsCount(unit: *TranslationUnit, node: ASTNode) callconv(.c) usize {
     var buffer: [1]Ast.Node.Index = undefined;
-    const full_fn_proto = unit.tree.fullFnProto(&buffer, @enumFromInt(node.index)) orelse return 0;
+    const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(@intCast(node.index))) orelse return 0;
     return full_fn_proto.ast.params.len;
 }
 
@@ -250,22 +195,26 @@ pub export fn getNodeParams(
     capacity: usize,
 ) callconv(.c) usize {
     var buffer: [1]Ast.Node.Index = undefined;
-    const full_fn_proto = unit.tree.fullFnProto(&buffer, @enumFromInt(node.index)) orelse return 0;
+    const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(@intCast(node.index))) orelse return 0;
 
     var i: usize = 0;
-    for (full_fn_proto.ast.params) |param_index| {
+    var params = full_fn_proto.iterate(unit.tree);
+    while (params.next()) |param| {
+        // The existing FFI exposes parameters with an explicit type expression.
+        const type_expr = param.type_expr orelse continue;
         if (i >= capacity) break;
-        const param_node = getTranslationUnitNodeFromIndex(unit, @intFromEnum(param_index));
-        const param_name = unit.tree.tokenSlice(param_node.main_token - 2);
-
+        const param_node = unit.nodes[@backingInt(type_expr)];
+        const param_name = if (param.name_token) |name|
+            unit.tree.tokenSlice(name)
+        else
+            "";
         out[i] = .{
             .name = makeSlice(u8, param_name.ptr, param_name.len),
             .type = param_node,
-            .is_comptime = param_node.main_token > 2 and std.mem.eql(
-                u8,
-                unit.tree.tokenSlice(param_node.main_token - 3),
-                "comptime",
-            ),
+            .is_comptime = if (param.comptime_noalias) |modifier|
+                unit.tree.tokenTag(modifier) == .keyword_comptime
+            else
+                false,
         };
         i += 1;
     }
@@ -273,7 +222,7 @@ pub export fn getNodeParams(
 }
 
 pub export fn isNodeExtern(unit: *TranslationUnit, node: ASTNode) callconv(.c) bool {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     const token = switch (tag) {
         .root => return false,
         .fn_proto_simple,
@@ -292,7 +241,7 @@ pub export fn isNodeExtern(unit: *TranslationUnit, node: ASTNode) callconv(.c) b
 }
 
 pub export fn isNodeExport(unit: *TranslationUnit, node: ASTNode) callconv(.c) bool {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     const token = switch (tag) {
         .root => return false,
         .fn_proto_simple,
@@ -311,7 +260,7 @@ pub export fn isNodeExport(unit: *TranslationUnit, node: ASTNode) callconv(.c) b
 }
 
 pub export fn isNodePublic(unit: *TranslationUnit, node: ASTNode) callconv(.c) bool {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     var token: u32 = node.main_token;
 
     switch (tag) {
@@ -336,7 +285,7 @@ pub export fn isNodePublic(unit: *TranslationUnit, node: ASTNode) callconv(.c) b
 }
 
 pub export fn isNodeConst(unit: *TranslationUnit, node: ASTNode) callconv(.c) bool {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     const token_index = switch (tag) {
         .identifier => if (node.main_token > 0) node.main_token - 1 else node.main_token,
         else => node.main_token,
@@ -345,7 +294,7 @@ pub export fn isNodeConst(unit: *TranslationUnit, node: ASTNode) callconv(.c) bo
 }
 
 pub export fn isNodeContainer(node: ASTNode) callconv(.c) bool {
-    const tag: Tag = @enumFromInt(node.tag_index);
+    const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     return switch (tag) {
         .container_decl,
         .container_decl_trailing,
