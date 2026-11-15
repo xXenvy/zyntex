@@ -16,7 +16,12 @@ def check_zig_version() -> str:
     try:
         result = subprocess.run(["zig", "version"], capture_output=True, text=True)
     except FileNotFoundError:
-        raise RuntimeError("Zig is not installed or not found in PATH.")
+        raise RuntimeError(
+            f"Zig {ZIG_VERSION} is required to build the native libraries, "
+            "but Zig is not installed or not found in PATH. "
+            f"Install Zig {ZIG_VERSION}, add its executable directory to PATH, "
+            "and verify the installation with 'zig version'."
+        )
 
     if result.returncode != 0:
         stderr = (result.stderr or "").strip()
