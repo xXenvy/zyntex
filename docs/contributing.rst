@@ -14,6 +14,11 @@ Requirements
 Quickstart
 ----------
 
+The repository contains two subprojects. ``python/`` contains the Python package,
+its tests, and packaging configuration. ``zig/`` contains the native library,
+its tests, and the enum generator. Shared build scripts live in ``tools/``.
+Run the commands below from the repository root unless a step changes directory.
+
 1. Fork the repository.
 2. Clone the repository and enter project directory.
 3. Create and activate a virtual environment.
@@ -21,13 +26,13 @@ Quickstart
 
    .. code-block:: bash
 
-      pip install -r dev-requirements.txt
+      pip install -r python/dev-requirements.txt
 
 5. Install the package in editable mode:
 
    .. code-block:: bash
 
-      pip install -e .
+      pip install -e ./python
 
    .. note::
       Installing in editable mode will automatically trigger a build of the native
@@ -50,7 +55,7 @@ Building native libraries (Zig)
 
    .. code-block:: bash
 
-      python build_libs.py
+      python tools/build_libs.py
 
    .. note::
       If you make changes to the **C-API**, you must rebuild the libraries afterwards.
@@ -75,7 +80,7 @@ Running tests
 
    .. code-block:: bash
 
-      pytest tests
+      python -m pytest python/tests
 
 Quality checks
 --------------
@@ -84,13 +89,13 @@ Quality checks
 
    .. code-block:: bash
 
-      pylint zyntex
+      pylint --rcfile python/pyproject.toml python/src
 
 2. Run pyright:
 
    .. code-block:: bash
 
-      pyright zyntex
+      pyright --project python
 
 Commit & PR guidelines
 ----------------------

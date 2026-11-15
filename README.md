@@ -28,6 +28,16 @@ and is actively being developed.**
 pip install zyntex
 ```
 
+## Repository layout
+
+- `python/` contains the Python package in `src/`, its tests, and packaging configuration.
+- `zig/` contains the native library, its tests, and the enum generator.
+- `tools/` contains shared library and documentation build scripts.
+- `docs/` and `examples/` contain documentation and usage examples.
+
+To install from a checkout, run `pip install -e ./python` from the repository root.
+See `docs/contributing.rst` for build and test commands.
+
 ## Minimal example
 ```python
 from typing import cast

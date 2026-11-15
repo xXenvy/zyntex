@@ -1,4 +1,9 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 filterwarnings = [
     "ignore::pytest.PytestCollectionWarning"
 ]
@@ -6,7 +11,8 @@ filterwarnings = [
 [tool.pyright]
 typeCheckingMode = "basic"
 pythonVersion = "3.9, 3.10, 3.11, 3.12, 3.13"
-ignore = ["tests", "zig"]
+include = ["src"]
+ignore = ["tests"]
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3

@@ -16,10 +16,12 @@ jobs:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: pip install -r dev-requirements.txt
+        run: pip install -r python/dev-requirements.txt
 
       - name: Run pyright
-        run: pyright ./zyntex
+        working-directory: python
+        run: pyright src
 
       - name: Run pylint
-        run: pylint ./zyntex
+        working-directory: python
+        run: pylint src

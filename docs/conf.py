@@ -6,14 +6,19 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import sys
-import os
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 
 project = 'zyntex'
 copyright = '2025, xXenvy'
 author = 'xXenvy'
 release = "0.2.3"
 
-sys.path.insert(0, os.path.abspath(".."))
+package_source = Path(__file__).resolve().parents[1] / "python" / "src" / "__init__.py"
+package_spec = spec_from_file_location("zyntex", package_source)
+package = module_from_spec(package_spec)
+sys.modules["zyntex"] = package
+package_spec.loader.exec_module(package)
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

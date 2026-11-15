@@ -4,9 +4,11 @@ import sys
 import logging
 
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 from shutil import rmtree
 
 logger = logging.getLogger(__name__)
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 def check_sphinx() -> str:
@@ -68,16 +70,18 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 
     if not args.skip_install:
-        install_requirements("docs/requirements.txt")
+        install_requirements(str(REPOSITORY_ROOT / "docs" / "requirements.txt"))
 
     ver = check_sphinx()
     logger.info("Found: %s", ver)
 
-    if args.clean:
-        logger.info("Cleaning: docs/_build/html")
-        rmtree("docs/_build/html")
+    source_dir = REPOSITORY_ROOT / "docs"
+    build_dir = source_dir / "_build" / "html"
+    if args.clean and build_dir.exists():
+        logger.info("Cleaning: %s", build_dir)
+        rmtree(build_dir)
 
-    build_docs("docs", "docs/_build/html")
+    build_docs(str(source_dir), str(build_dir))
     logger.info("Done.")
 
 
