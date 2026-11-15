@@ -82,12 +82,12 @@ test "parser parses simple source file with errors" {
     const error_1 = errors[0];
     const error_2 = errors[1];
 
-    try std.testing.expectEqual(error_1.tag_index, 42);
+    try std.testing.expectEqual(error_1.tag_index, @backingInt(std.zig.Ast.Error.Tag.expected_semi_after_decl));
     try std.testing.expectEqual(error_1.is_note, false);
     try std.testing.expectEqual(error_1.token_is_prev, true);
     try std.testing.expectEqual(error_1.token_index, 6);
 
-    try std.testing.expectEqual(error_2.tag_index, 18);
+    try std.testing.expectEqual(error_2.tag_index, @backingInt(std.zig.Ast.Error.Tag.expected_return_type));
     try std.testing.expectEqual(error_2.is_note, false);
     try std.testing.expectEqual(error_2.token_is_prev, false);
     try std.testing.expectEqual(error_2.token_index, 12);
@@ -97,7 +97,7 @@ test "parser parses large source file correctly" {
     const tu: *TranslationUnit = c_api.createTranslationUnit("tests/test_sources/large.zig").?;
     defer c_api.freeTranslationUnit(tu);
 
-    try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 8323);
+    try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 8324);
     try std.testing.expectEqual(c_api.getTranslationUnitNodesCount(tu), 4433);
     try std.testing.expectEqual(c_api.getTranslationUnitErrorsCount(tu), 0);
 }

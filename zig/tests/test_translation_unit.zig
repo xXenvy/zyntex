@@ -23,10 +23,10 @@ test "parsing simple invalid code from string produces one error" {
     try std.testing.expectEqualStrings(tu.tree.source, "pub fn main() void {");
     try std.testing.expectEqualStrings(tu.buffer, "pub fn main() void {");
     try std.testing.expectEqual(tu.tokens.len, 8);
-    try std.testing.expectEqual(tu.tree.nodes.len, 4);
+    try std.testing.expectEqual(tu.tree.nodes.len, 3);
 
     const error_report = tu.errors[0];
-    try std.testing.expectEqual(error_report.tag_index, 21);
+    try std.testing.expectEqual(error_report.tag_index, @backingInt(std.zig.Ast.Error.Tag.expected_statement));
     try std.testing.expectEqual(error_report.is_note, false);
     try std.testing.expectEqual(error_report.token_is_prev, false);
     try std.testing.expectEqual(error_report.token_index, 7);
@@ -58,7 +58,7 @@ test "parsing large valid code from file produces no errors" {
     var tu = try TranslationUnit.initFromFile("tests/test_sources/large.zig");
     defer tu.deinit();
 
-    try std.testing.expectEqual(tu.tokens.len, 8323);
+    try std.testing.expectEqual(tu.tokens.len, 8324);
     try std.testing.expectEqual(tu.tree.nodes.len, 4433);
     try std.testing.expectEqual(tu.errors.len, 0);
 }
@@ -85,13 +85,13 @@ test "parsing simple invalid code from file produces two errors" {
     try std.testing.expectEqual(tu.tree.nodes.len, 7);
 
     const error_1 = tu.errors[0];
-    try std.testing.expectEqual(error_1.tag_index, 42);
+    try std.testing.expectEqual(error_1.tag_index, @backingInt(std.zig.Ast.Error.Tag.expected_semi_after_decl));
     try std.testing.expectEqual(error_1.is_note, false);
     try std.testing.expectEqual(error_1.token_is_prev, true);
     try std.testing.expectEqual(error_1.token_index, 6);
 
     const error_2 = tu.errors[1];
-    try std.testing.expectEqual(error_2.tag_index, 18);
+    try std.testing.expectEqual(error_2.tag_index, @backingInt(std.zig.Ast.Error.Tag.expected_return_type));
     try std.testing.expectEqual(error_2.is_note, false);
     try std.testing.expectEqual(error_2.token_is_prev, false);
     try std.testing.expectEqual(error_2.token_index, 12);
