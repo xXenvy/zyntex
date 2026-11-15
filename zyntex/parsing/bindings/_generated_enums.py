@@ -166,7 +166,6 @@ class NodeTag(Enum):
     ASM_INPUT = 160
     ERROR_VALUE = 161
     ERROR_UNION = 162
-    OR_ELSE = ORELSE  # Backward-compatible Python spelling.
 
 
 class TokenTag(Enum):

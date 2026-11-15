@@ -10,10 +10,6 @@ fn writeEnum(writer: *std.Io.Writer, allocator: std.mem.Allocator, name: []const
         defer allocator.free(upper);
         try writer.print("    {s} = {d}\n", .{ upper, field_value });
     }
-
-    if (T == std.zig.Ast.Node.Tag) {
-        try writer.writeAll("    OR_ELSE = ORELSE  # Backward-compatible Python spelling.\n");
-    }
 }
 
 fn bindingsMatch(init: std.process.Init, path: []const u8, expected: []const u8) !bool {
