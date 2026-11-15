@@ -33,7 +33,7 @@ jobs:
 
       - name: Build distributions
         run: |
-          python -m build --sdist --wheel
+          python -m build ./python --outdir dist
 
       - name: Publish to PyPI
         env:

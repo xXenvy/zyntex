@@ -3,10 +3,13 @@ import os
 import logging
 
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 from shutil import copy2, rmtree
 
 logger = logging.getLogger(__name__)
 ZIG_VERSION = "0.17.1"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+PYTHON_ROOT = REPOSITORY_ROOT / "python" if (REPOSITORY_ROOT / "python" / "setup.py").is_file() else REPOSITORY_ROOT
 
 
 def check_zig_version() -> str:
@@ -29,13 +32,13 @@ def check_zig_version() -> str:
     return version
 
 
-def run_build(release_mode: bool) -> None:
-    args = ["zig", "build", "install", "--summary", "all"]
+def run_build(release_mode: bool, out_dir: str) -> None:
+    args = ["zig", "build", "install", "--summary", "all", "--prefix", out_dir]
     if release_mode:
         args.append("-Doptimize=ReleaseFast")
 
     logger.info("Running: %s", " ".join(args))
-    result = subprocess.run(args, cwd="zig")
+    result = subprocess.run(args, cwd=REPOSITORY_ROOT / "zig")
     if result.returncode != 0:
         raise RuntimeError(f"Zig build failed ({result.returncode}).")
     logger.info("Zig build completed successfully.")
@@ -80,10 +83,14 @@ def cleanup(*dirs) -> None:
 def parse_args() -> Namespace:
     p = ArgumentParser()
     p.add_argument("--release-mode", action="store_true", help="Build libs in release mode.")
-    p.add_argument("--out-dir", default="zig/zig-out", help="Build output directory.")
+    p.add_argument(
+        "--out-dir",
+        default=str(REPOSITORY_ROOT / "zig" / "zig-out"),
+        help="Build output directory.",
+    )
     p.add_argument(
         "--dest-dir",
-        default="zyntex/parsing/bindings/native",
+        default=str(PYTHON_ROOT / "src" / "parsing" / "bindings" / "native"),
         help="Destination directory for native libs."
     )
     p.add_argument("--keep-cache", action="store_true", help="Do not delete zig cache dir.")
@@ -100,11 +107,11 @@ def main() -> None:
     check_zig_version()
     logger.info("The zig version is correct.")
 
-    out_dir = args.out_dir
-    destination_dir = args.dest_dir
-    cleanup_dirs = (out_dir, "zig/.zig-cache") if not args.keep_cache else (out_dir,)
+    out_dir = str(Path(args.out_dir).resolve())
+    destination_dir = str(Path(args.dest_dir).resolve())
+    cleanup_dirs = (out_dir, REPOSITORY_ROOT / "zig" / ".zig-cache") if not args.keep_cache else (out_dir,)
 
-    run_build(release_mode=args.release_mode)
+    run_build(release_mode=args.release_mode, out_dir=out_dir)
     copy_and_rename_libs(out_dir, destination_dir)
     cleanup(*cleanup_dirs)
     logger.info("Done.")

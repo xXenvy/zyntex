@@ -1,4 +1,5 @@
 # Zyntex - Zig code parser for Python
+
 ![Downloads](https://img.shields.io/pypi/dm/zyntex?style=flat-square&color=%234287f5)
 ![License](https://img.shields.io/github/license/xXenvy/zyntex?style=flat-square&color=%234287f5)
 ![Python Version](https://img.shields.io/pypi/pyversions/zyntex?style=flat-square&color=%234287f5)
@@ -17,6 +18,7 @@ For more information, read the [docs](https://zyntex.readthedocs.io/en/stable).
 and is actively being developed.**
 
 ## Features
+
 - Parse Zig source from strings or files.
 - Code generation - emitting Zig code from Python objects via premade printers.
 - High-performance, low-memory parsing powered by Zig’s `std` parser.
@@ -24,11 +26,20 @@ and is actively being developed.**
 - Zero-dependency - the project requires no external dependencies on either the Zig side or the Python side.
 
 ## Installation
+
 ```bash
 pip install zyntex
 ```
 
+## Repository layout
+
+- `python/` contains the Python package in `src/`, its tests, and packaging configuration.
+- `zig/` contains the native library, its tests, and the enum generator.
+- `tools/` contains shared library and documentation build scripts.
+- `docs/` and `examples/` contain documentation and usage examples.
+
 ## Minimal example
+
 ```python
 from typing import cast
 
@@ -43,3 +54,4 @@ variable = cast(VariableDeclaration, src.content[0])
 variable.is_public = True
 print(code_printer.print(src)) # pub const result: usize = 15 + 15;
 ```
+
