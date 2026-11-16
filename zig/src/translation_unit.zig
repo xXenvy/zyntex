@@ -13,35 +13,35 @@ errors: []const structs.ErrorReport,
 tokens: []const structs.ASTToken,
 nodes: []const structs.ASTNode,
 
-pub fn initFromFile(file_path: [*:0]const u8) !TranslationUnit {
-    var io_backend = std.Io.Threaded.init(std.heap.page_allocator, .{});
+pub fn initFromFile(backing_allocator: std.mem.Allocator, file_path: []const u8) !TranslationUnit {
+    var io_backend = std.Io.Threaded.init(backing_allocator, .{});
     defer io_backend.deinit();
     const buffer = try std.Io.Dir.cwd().readFileAllocOptions(
         io_backend.io(),
-        std.mem.span(file_path),
-        std.heap.page_allocator,
+        file_path,
+        backing_allocator,
         .unlimited,
         .of(u8),
         0,
     );
-    defer std.heap.page_allocator.free(buffer);
-    return try initFromSource(buffer);
+    defer backing_allocator.free(buffer);
+    return try initFromSource(backing_allocator, buffer);
 }
 
-pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+pub fn initFromSource(backing_allocator: std.mem.Allocator, source: []const u8) !TranslationUnit {
+    var arena = std.heap.ArenaAllocator.init(backing_allocator);
     errdefer arena.deinit();
-    const allocator = arena.allocator();
+    const arena_allocator = arena.allocator();
 
     // Make a copy on the heap, since AST keeps a reference to the source.
-    const heap_source = try allocator.dupeSentinel(u8, std.mem.span(source), 0);
+    const heap_source = try arena_allocator.dupeSentinel(u8, source, 0);
 
-    const ast_ptr = try allocator.create(std.zig.Ast);
-    ast_ptr.* = try std.zig.Ast.parse(allocator, heap_source, .{ .mode = .zig });
+    const ast_ptr = try arena_allocator.create(std.zig.Ast);
+    ast_ptr.* = try std.zig.Ast.parse(arena_allocator, heap_source, .{ .mode = .zig });
 
     const internal_errors: []const std.zig.Ast.Error = ast_ptr.errors;
     const count = internal_errors.len;
-    const error_slice = try allocator.alloc(structs.ErrorReport, count);
+    const error_slice = try arena_allocator.alloc(structs.ErrorReport, count);
 
     for (0..count) |i| {
         const src = internal_errors[i];
@@ -55,7 +55,7 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
     }
 
     const tokens_count = ast_ptr.tokens.len;
-    const tokens_copy = try allocator.alloc(structs.ASTToken, tokens_count);
+    const tokens_copy = try arena_allocator.alloc(structs.ASTToken, tokens_count);
     for (0..tokens_count) |i| {
         const original_token = ast_ptr.tokens.get(i);
         tokens_copy[i] = .{
@@ -65,7 +65,7 @@ pub fn initFromSource(source: [*:0]const u8) !TranslationUnit {
     }
 
     const node_count = ast_ptr.nodes.len;
-    const node_copy = try allocator.alloc(structs.ASTNode, node_count);
+    const node_copy = try arena_allocator.alloc(structs.ASTNode, node_count);
     for (0..node_count) |i| {
         const original_node: Ast.Node = ast_ptr.nodes.get(i);
         node_copy[i] = .{

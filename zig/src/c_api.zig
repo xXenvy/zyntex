@@ -1,8 +1,9 @@
 const std = @import("std");
+const builtin = @import("builtin");
 const structs = @import("structs.zig");
 const TranslationUnit = @import("translation_unit.zig");
 
-const allocator = std.heap.page_allocator;
+const backing_allocator = if (builtin.is_test) std.testing.allocator else std.heap.smp_allocator;
 const Ast = std.zig.Ast;
 const Tag = Ast.Node.Tag;
 
@@ -33,18 +34,18 @@ pub fn toSlice(comptime T: type, gs: GenericSlice) []const T {
 }
 
 pub export fn createTranslationUnit(file_path: [*:0]const u8) callconv(.c) ?*TranslationUnit {
-    const unit_ptr = allocator.create(TranslationUnit) catch return null;
-    unit_ptr.* = TranslationUnit.initFromFile(file_path) catch {
-        allocator.destroy(unit_ptr);
+    const unit_ptr = backing_allocator.create(TranslationUnit) catch return null;
+    unit_ptr.* = TranslationUnit.initFromFile(backing_allocator, std.mem.span(file_path)) catch {
+        backing_allocator.destroy(unit_ptr);
         return null;
     };
     return unit_ptr;
 }
 
 pub export fn createTranslationUnitFromSource(source: [*:0]const u8) callconv(.c) ?*TranslationUnit {
-    const unit_ptr = allocator.create(TranslationUnit) catch return null;
-    unit_ptr.* = TranslationUnit.initFromSource(source) catch {
-        allocator.destroy(unit_ptr);
+    const unit_ptr = backing_allocator.create(TranslationUnit) catch return null;
+    unit_ptr.* = TranslationUnit.initFromSource(backing_allocator, std.mem.span(source)) catch {
+        backing_allocator.destroy(unit_ptr);
         return null;
     };
     return unit_ptr;
@@ -89,7 +90,7 @@ pub export fn getTranslationUnitSource(unit: *TranslationUnit) callconv(.c) Gene
 
 pub export fn freeTranslationUnit(unit: *TranslationUnit) callconv(.c) void {
     unit.deinit();
-    allocator.destroy(unit);
+    backing_allocator.destroy(unit);
 }
 
 pub export fn getNodeSpelling(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {

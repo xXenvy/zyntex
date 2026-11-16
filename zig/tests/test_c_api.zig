@@ -8,7 +8,10 @@ const TranslationUnit = @import("../src/translation_unit.zig");
 const ErrorReport = structs.ErrorReport;
 const ASTToken = structs.ASTToken;
 const ASTNode = structs.ASTNode;
-const allocator = std.testing.allocator;
+
+test "missing file returns null and releases the translation unit handle" {
+    try std.testing.expect(c_api.createTranslationUnit("tests/test_sources/missing.zig") == null);
+}
 
 test "parser generic slice roundtrip" {
     const Item = struct {

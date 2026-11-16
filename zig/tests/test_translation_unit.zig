@@ -5,7 +5,7 @@ const normalize = @import("helpers.zig").normalize;
 const TranslationUnit = @import("../src/translation_unit.zig");
 
 test "parsing simple valid code from source produces no errors" {
-    var tu = try TranslationUnit.initFromSource("pub fn main() void {}");
+    var tu = try TranslationUnit.initFromSource(allocator, "pub fn main() void {}");
     defer tu.deinit();
 
     try std.testing.expectEqual(tu.errors.len, 0);
@@ -16,7 +16,7 @@ test "parsing simple valid code from source produces no errors" {
 }
 
 test "parsing simple invalid code from string produces one error" {
-    var tu = try TranslationUnit.initFromSource("pub fn main() void {");
+    var tu = try TranslationUnit.initFromSource(allocator, "pub fn main() void {");
     defer tu.deinit();
 
     try std.testing.expectEqual(tu.errors.len, 1);
@@ -33,7 +33,7 @@ test "parsing simple invalid code from string produces one error" {
 }
 
 test "parsing simple valid code from file produces no errors" {
-    var tu = try TranslationUnit.initFromFile("tests/test_sources/simple.zig");
+    var tu = try TranslationUnit.initFromFile(allocator, "tests/test_sources/simple.zig");
     defer tu.deinit();
 
     const expected =
@@ -55,7 +55,7 @@ test "parsing simple valid code from file produces no errors" {
 }
 
 test "parsing large valid code from file produces no errors" {
-    var tu = try TranslationUnit.initFromFile("tests/test_sources/large.zig");
+    var tu = try TranslationUnit.initFromFile(allocator, "tests/test_sources/large.zig");
     defer tu.deinit();
 
     try std.testing.expectEqual(tu.tokens.len, 8324);
@@ -64,7 +64,7 @@ test "parsing large valid code from file produces no errors" {
 }
 
 test "parsing simple invalid code from file produces two errors" {
-    var tu = try TranslationUnit.initFromFile("tests/test_sources/invalid.zig");
+    var tu = try TranslationUnit.initFromFile(allocator, "tests/test_sources/invalid.zig");
     defer tu.deinit();
 
     const expected =
