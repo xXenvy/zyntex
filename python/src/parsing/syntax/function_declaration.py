@@ -52,7 +52,7 @@ class FunctionDeclaration(INodeElement):
     def is_node_valid(node: PyASTNode) -> bool:
         if node.tag == NodeTag.FN_DECL:
             return True
-        return node.is_extern and node.tag in (
+        return node.is_extern() and node.tag in (
             NodeTag.FN_PROTO,
             NodeTag.FN_PROTO_ONE,
             NodeTag.FN_PROTO_SIMPLE,
