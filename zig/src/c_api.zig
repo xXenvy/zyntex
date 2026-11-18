@@ -110,7 +110,7 @@ pub export fn getNodeSpelling(unit: *TranslationUnit, node: ASTNode) callconv(.c
         => token_index += 1,
 
         .test_decl => {
-            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index)));
+            const node_data = unit.tree.nodeData(@fromBackingInt(node.index));
             if (node_data.opt_token_and_node[0].unwrap()) |position| {
                 token_index = position;
             }
@@ -122,12 +122,12 @@ pub export fn getNodeSpelling(unit: *TranslationUnit, node: ASTNode) callconv(.c
 }
 
 pub export fn getNodeSource(unit: *TranslationUnit, node_index: u32) callconv(.c) GenericSlice {
-    const source: []const u8 = unit.tree.getNodeSource(@fromBackingInt(@intCast(node_index)));
+    const source: []const u8 = unit.tree.getNodeSource(@fromBackingInt(node_index));
     return makeSlice(u8, source.ptr, source.len);
 }
 
 pub export fn getNodeType(unit: *TranslationUnit, node: ASTNode) callconv(.c) ASTNode {
-    const index: Ast.Node.Index = @fromBackingInt(@intCast(node.index));
+    const index: Ast.Node.Index = @fromBackingInt(node.index);
     if (unit.tree.fullVarDecl(index)) |decl| {
         if (decl.ast.type_node.unwrap()) |type_node| {
             return unit.nodes[@backingInt(type_node)];
@@ -152,7 +152,7 @@ pub export fn getNodeType(unit: *TranslationUnit, node: ASTNode) callconv(.c) AS
 }
 
 pub export fn getNodeAlign(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
-    const decl = unit.tree.fullVarDecl(@fromBackingInt(@intCast(node.index))) orelse
+    const decl = unit.tree.fullVarDecl(@fromBackingInt(node.index)) orelse
         return .{ .ptr = null, .len = 0 };
     const align_node = decl.ast.align_node.unwrap() orelse
         return .{ .ptr = null, .len = 0 };
@@ -160,7 +160,7 @@ pub export fn getNodeAlign(unit: *TranslationUnit, node: ASTNode) callconv(.c) G
 }
 
 pub export fn getNodeBody(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
-    if (unit.tree.fullVarDecl(@fromBackingInt(@intCast(node.index)))) |decl| {
+    if (unit.tree.fullVarDecl(@fromBackingInt(node.index))) |decl| {
         const init_node = decl.ast.init_node.unwrap() orelse
             return .{ .ptr = null, .len = 0 };
         return getNodeSource(unit, @backingInt(init_node));
@@ -168,15 +168,19 @@ pub export fn getNodeBody(unit: *TranslationUnit, node: ASTNode) callconv(.c) Ge
     const tag: Tag = @fromBackingInt(@intCast(node.tag_index));
     switch (tag) {
         .fn_decl => {
-            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index))).node_and_node;
+            const node_data = unit.tree.nodeData(@fromBackingInt(node.index)).node_and_node;
             return getNodeSource(unit, @backingInt(node_data[1]));
         },
         .test_decl => {
-            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index))).opt_token_and_node;
+            const node_data = unit.tree.nodeData(@fromBackingInt(node.index)).opt_token_and_node;
             return getNodeSource(unit, @backingInt(node_data[1]));
         },
+        .@"comptime" => {
+            const body = unit.tree.nodeData(@fromBackingInt(node.index)).node;
+            return getNodeSource(unit, @backingInt(body));
+        },
         .array_type => {
-            const node_data = unit.tree.nodeData(@fromBackingInt(@intCast(node.index))).node_and_node;
+            const node_data = unit.tree.nodeData(@fromBackingInt(node.index)).node_and_node;
             return getNodeSource(unit, @backingInt(node_data[0]));
         },
         else => return .{ .ptr = null, .len = 0 },
@@ -185,7 +189,7 @@ pub export fn getNodeBody(unit: *TranslationUnit, node: ASTNode) callconv(.c) Ge
 
 pub export fn getNodeParamsCount(unit: *TranslationUnit, node: ASTNode) callconv(.c) usize {
     var buffer: [1]Ast.Node.Index = undefined;
-    const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(@intCast(node.index))) orelse return 0;
+    const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(node.index)) orelse return 0;
     return full_fn_proto.ast.params.len;
 }
 
@@ -196,7 +200,7 @@ pub export fn getNodeParams(
     capacity: usize,
 ) callconv(.c) usize {
     var buffer: [1]Ast.Node.Index = undefined;
-    const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(@intCast(node.index))) orelse return 0;
+    const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(node.index)) orelse return 0;
 
     var i: usize = 0;
     var params = full_fn_proto.iterate(unit.tree);

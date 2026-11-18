@@ -331,3 +331,33 @@ test "parser parses exports correctly" {
     try std.testing.expectEqual(c_api.getNodeParamsCount(tu, func_node_1), 1);
     try std.testing.expectEqual(c_api.getNodeParamsCount(tu, func_node_2), 0);
 }
+
+test "parser parses comptime blocks correctly" {
+    const tu = c_api.createTranslationUnitFromSource(
+        \\comptime {}
+        \\comptime {
+        \\    // Keep formatting.
+        \\    var suma: usize = 0;
+        \\    suma += 1;
+        \\}
+        \\comptime { if (true) { const value = 1; _ = value; } }
+    ).?;
+    defer c_api.freeTranslationUnit(tu);
+    const indexes: []const u32 = c_api.toSlice(u32, c_api.getTranslationUnitRootNodes(tu));
+    try std.testing.expectEqual(indexes.len, 3);
+    try std.testing.expectEqual(c_api.getTranslationUnitErrorsCount(tu), 0);
+
+    const empty_block: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[0]);
+    const multiline_block: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[1]);
+    const nested_block: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[2]);
+
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeBody(tu, empty_block)), "{}");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeBody(tu, multiline_block)),
+        \\{
+        \\    // Keep formatting.
+        \\    var suma: usize = 0;
+        \\    suma += 1;
+        \\}
+    );
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeBody(tu, nested_block)), "{ if (true) { const value = 1; _ = value; } }");
+}
