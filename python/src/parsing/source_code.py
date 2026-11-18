@@ -6,6 +6,7 @@ from .syntax import (
     FunctionDeclaration,
     VariableDeclaration,
     TestDeclaration,
+    ComptimeBlock,
 )
 from .bindings import PyTranslationUnit, ErrorReport, get_native_library
 
@@ -74,4 +75,4 @@ class SourceCode:
     @property
     def types(self) -> tuple[type[INodeElement], ...]:
         """Supported top-level node element types."""
-        return TestDeclaration, FunctionDeclaration, VariableDeclaration
+        return TestDeclaration, FunctionDeclaration, VariableDeclaration, ComptimeBlock

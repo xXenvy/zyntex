@@ -1,7 +1,13 @@
 from __future__ import annotations
 from typing import Optional
 
-from .syntax import INodeElement, FunctionDeclaration, VariableDeclaration, TestDeclaration
+from .syntax import (
+    INodeElement,
+    FunctionDeclaration,
+    VariableDeclaration,
+    TestDeclaration,
+    ComptimeBlock,
+)
 from .bindings import PyTranslationUnit, ErrorReport, get_native_library
 
 
@@ -74,4 +80,4 @@ class SourceFile:
     @property
     def types(self) -> tuple[type[INodeElement], ...]:
         """Supported top-level node element types."""
-        return FunctionDeclaration, VariableDeclaration, TestDeclaration
+        return FunctionDeclaration, VariableDeclaration, TestDeclaration, ComptimeBlock
