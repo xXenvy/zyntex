@@ -4,7 +4,6 @@ from ..bindings import PyASTNode, NodeTag
 
 from .lazy_init import LazyInit, lazy_invoke
 from .node_element import INodeElement
-from .type_node import TypeNode
 
 
 class VariableDeclaration(INodeElement):
@@ -14,7 +13,7 @@ class VariableDeclaration(INodeElement):
             self,
             name: Union[str, LazyInit],
             value: Union[str, None, LazyInit],
-            type_hint: Union[TypeNode, None, LazyInit],
+            type_hint: Union[str, None, LazyInit],
             alignment: Union[str, None, LazyInit] = None,
             is_public: Union[bool, LazyInit] = False,
             is_const: Union[bool, LazyInit] = False,
@@ -68,18 +67,14 @@ class VariableDeclaration(INodeElement):
 
     @property
     @lazy_invoke
-    def type_hint(self) -> Optional[TypeNode]:
-        """The explicit Zig type annotation for the variable, if present."""
+    def type_hint(self) -> Optional[str]:
+        """The explicit type annotation as Zig source, if present."""
         assert isinstance(self._type_hint, LazyInit)
-        node_type = self._type_hint.node.type
-        if node_type:
-            self._type_hint = TypeNode.from_node(node_type)
-        else:
-            self._type_hint = None
+        self._type_hint = self._type_hint.node.type
         return self._type_hint
 
     @type_hint.setter
-    def type_hint(self, value: Optional[TypeNode]) -> None:
+    def type_hint(self, value: Optional[str]) -> None:
         self._type_hint = value
 
     @property

@@ -1,10 +1,10 @@
 from typing import cast
 from pathlib import Path
 
-from zyntex.code_generation.premade import FunctionPrinter, TypePrinter
+from zyntex.code_generation.premade import DefaultCodePrinter, FunctionParamPrinter, FunctionPrinter
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.parsing.syntax import FunctionDeclaration, TypeNode
-from zyntex.parsing import SourceFile
+from zyntex.parsing.syntax import FunctionDeclaration
+from zyntex.parsing import SourceFile, SourceCode
 
 
 class TestFunctionPrinter:
@@ -15,7 +15,7 @@ class TestFunctionPrinter:
             str(Path(__file__).resolve().parent / "test_sources" / "functions.zig")
         )
         dispatcher = PrinterDispatcher()
-        dispatcher.add(TypeNode, TypePrinter)
+        dispatcher.add(FunctionDeclaration.FunctionParam, FunctionParamPrinter)
         cls.printer = FunctionPrinter(dispatcher)
 
     def test_file_basic_functions_print(self):
@@ -55,3 +55,32 @@ pub export fn publicExportTest(a: ?*u32, b: *myStruct) void {
         assert self.printer.print(function).replace("\r\n", "\n") == """
 fn testFuncParams(abc: ?usize, comptime len: u32) !void {}
 """.strip()
+
+    def test_generic_noalias_and_variadic_parameters(self):
+        sources = [
+            "fn f(comptime T: type, x: anytype, noalias p: *T) !?T {}",
+            "extern fn f(u8, noalias *u8, ...) void;",
+            "extern fn f(...) void;",
+            "fn f(x: fn(anytype) !u8) E!?[]const u8 {}",
+        ]
+        for source in sources:
+            code = SourceCode(source)
+            assert code.errors == []
+            function = cast(FunctionDeclaration, code.content[0])
+            generated = self.printer.print(function)
+            assert generated == source
+
+    def test_edit_parameter_and_return_type(self):
+        return_type = "! // inferred error set\n    ?[:0]const u8"
+        source = f"fn f(callback: *const fn(u8) void) {return_type} {{}}"
+        code = SourceCode(source)
+        assert code.errors == []
+        function = cast(FunctionDeclaration, code.content[0])
+        assert function.params[0].type == "*const fn(u8) void"
+        assert function.return_type == return_type
+        assert self.printer.print(function) == source
+
+        function.params[0].type = "*const fn(u16) void"
+        assert DefaultCodePrinter().print(function.params[0]) == "callback: *const fn(u16) void"
+        function.return_type = "E!void"
+        assert self.printer.print(function) == "fn f(callback: *const fn(u16) void) E!void {}"

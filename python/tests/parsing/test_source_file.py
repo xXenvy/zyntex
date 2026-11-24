@@ -2,7 +2,6 @@ from typing import cast
 from pathlib import Path
 
 from zyntex.parsing.syntax import FunctionDeclaration
-from zyntex.parsing.bindings import PrimitiveType
 from zyntex.parsing import SourceFile
 
 
@@ -17,9 +16,7 @@ class TestSourceFile:
         assert function_decl.is_public is False
         assert function_decl.body == "{}"
 
-        assert function_decl.return_type.is_type()
-        assert not function_decl.return_type.is_const
-        assert function_decl.return_type.absolute_type == PrimitiveType.void
+        assert function_decl.return_type == "void"
 
     @property
     def path_to_test_sources(self) -> Path:

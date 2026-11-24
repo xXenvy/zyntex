@@ -15,9 +15,8 @@ class VariablePrinter(IDefaultPrintable):
                 (not target.is_const, "var "),
             ) if condition
         )
-        type_hint = ""
-        if target.type_hint:
-            type_hint = f": {self._dispatcher.print(target.type_hint)}"
+        annotation = target.type_hint
+        type_hint = f": {annotation}" if annotation is not None else ""
         if target.is_extern or target.value is None:
             return f"{modifiers}{target.name}{type_hint};"
         return f"{modifiers}{target.name}{type_hint} = {target.value};"

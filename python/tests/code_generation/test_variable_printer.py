@@ -1,10 +1,10 @@
 from typing import cast
 from pathlib import Path
 
-from zyntex.code_generation.premade import VariablePrinter, TypePrinter
+from zyntex.code_generation.premade import VariablePrinter
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.parsing.syntax import VariableDeclaration, TypeNode
-from zyntex.parsing import SourceFile
+from zyntex.parsing.syntax import VariableDeclaration
+from zyntex.parsing import SourceFile, SourceCode
 
 
 class TestVariablePrinter:
@@ -14,9 +14,7 @@ class TestVariablePrinter:
         cls.file = SourceFile(
             str(Path(__file__).resolve().parent / "test_sources" / "variables.zig")
         )
-        dispatcher = PrinterDispatcher()
-        dispatcher.add(TypeNode, TypePrinter)
-        cls.printer = VariablePrinter(dispatcher)
+        cls.printer = VariablePrinter(PrinterDispatcher())
 
     def test_simple_variables(self):
         std_var = cast(VariableDeclaration, self.file.content[0])
@@ -41,3 +39,21 @@ class TestVariablePrinter:
 
         export_private = cast(VariableDeclaration, self.file.content[6])
         assert self.printer.print(export_private) == "export const exportPrivateVariable: i32 = -25;"
+
+    def test_qualified_type_hint(self):
+        source = "pub var allocator: heap.Allocator = allocator.allocator;"
+        code = SourceCode(source)
+        variable = cast(VariableDeclaration, code.content[0])
+
+        assert variable.type_hint == "heap.Allocator"
+        assert self.printer.print(variable) == source
+        
+        variable.type_hint = '?[:0]const @import("a.b.zig").Type'
+        generated = self.printer.print(variable)
+
+        assert generated == (
+            'pub var allocator: ?[:0]const @import("a.b.zig").Type = allocator.allocator;'
+        )
+        reparsed = SourceCode(generated)
+        assert reparsed.errors == []
+        assert cast(VariableDeclaration, reparsed.content[0]).type_hint == variable.type_hint

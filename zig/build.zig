@@ -23,15 +23,16 @@ pub fn build(b: *std.Build) void {
         }),
     });
     const generate = b.addRunArtifact(bindings_generator);
+    const enums_path = "../python/src/parsing/bindings/enums.py";
     generate.has_side_effects = true;
     generate.setCwd(b.path("."));
-    generate.addArgs(&.{ "--update", "../python/src/parsing/bindings/_generated_enums.py" });
+    generate.addArgs(&.{ "--update", enums_path });
     b.step("bindings", "Check Python AST enums and generate if needed").dependOn(&generate.step);
 
     const check_bindings = b.addRunArtifact(bindings_generator);
     check_bindings.has_side_effects = true;
     check_bindings.setCwd(b.path("."));
-    check_bindings.addArgs(&.{ "--check", "../python/src/parsing/bindings/_generated_enums.py" });
+    check_bindings.addArgs(&.{ "--check", enums_path });
 
     for (targets) |target| {
         const module = b.createModule(.{
