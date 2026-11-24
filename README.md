@@ -2,13 +2,13 @@
 
 **Parse, inspect, and generate Zig code from Python.**
 
-[![Python](https://img.shields.io/pypi/pyversions/zyntex?style=flat-square&color=4287f5)](https://pypi.org/project/zyntex/) [![Zig](https://img.shields.io/badge/Zig-0.17.1-4287f5?style=flat-square&logoColor=white)](https://ziglang.org/) [![Downloads](https://img.shields.io/pypi/dm/zyntex?style=flat-square&color=4287f5)](https://pypi.org/project/zyntex/) [![License](https://img.shields.io/github/license/xXenvy/zyntex?style=flat-square&color=4287f5)](https://github.com/xXenvy/zyntex/blob/master/LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/zyntex?style=flat-square&color=4287f5)](https://pypi.org/project/zyntex/) [![Zig](https://img.shields.io/badge/zig-0.17.1-4287f5?style=flat-square&logoColor=white)](https://ziglang.org/) [![Downloads](https://img.shields.io/pypi/dm/zyntex?style=flat-square&color=4287f5)](https://pypi.org/project/zyntex/) [![License](https://img.shields.io/github/license/xXenvy/zyntex?style=flat-square&color=4287f5)](https://github.com/xXenvy/zyntex/blob/master/LICENSE)
 
 [Documentation](https://zyntex.readthedocs.io/en/stable/)
 · [Examples](https://github.com/xXenvy/zyntex/tree/master/examples)
 · [Contributing](https://zyntex.readthedocs.io/en/stable/contributing.html)
 
-Zyntex wraps Zig's standard AST parser and exposes Python objects for working with
+Zyntex wraps Zig's std AST parser and exposes Python objects for working with
 source code. Inspect declarations, edit their properties, and emit Zig code using
 the built-in printers.
 
@@ -44,13 +44,14 @@ from zyntex.code_generation.premade import DefaultCodePrinter
 from zyntex.parsing import SourceCode
 from zyntex.parsing.syntax import VariableDeclaration
 
+printer = DefaultCodePrinter()
 source = SourceCode("const count: u32 = 42;")
 variable = cast(VariableDeclaration, source.content[0])
 
 variable.is_public = True
 variable.type_hint = "u64"
 
-print(DefaultCodePrinter().print(source))
+print(printer.print(source))
 ```
 
 Output:
@@ -63,12 +64,11 @@ For a larger example, see the [Zig code linter](https://github.com/xXenvy/zyntex
 
 ## Development
 
-- `python/` — Python package, tests, and packaging configuration.
-- `zig/` — native library, tests, and AST enum generator.
-- `tools/` — native library and documentation build scripts.
-- `docs/` — documentation sources.
-- `examples/` — usage examples.
+- `python/` - Python package, tests, and packaging configuration.
+- `zig/` - Native library, tests, and AST enum generator.
+- `tools/` - Native library and documentation build scripts.
+- `docs/` - Documentation sources.
+- `examples/` - Usage examples.
 
-See the [contributing guide](https://zyntex.readthedocs.io/en/stable/contributing.html)
-for setup, building native libraries, and running tests.
+See the [contributing guide](https://zyntex.readthedocs.io/en/stable/contributing.html) for setup, building native libraries, and running tests.
 
