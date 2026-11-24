@@ -32,17 +32,26 @@ class TestFunctionDeclaration:
 
     def test_function_params(self):
         code = SourceCode("""
-fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a + b;\n}
+fn testFunc(
+    a: [:0]const u8,
+    b: *const [2]u16,
+    comptime c: struct { offset: usize },
+) error{OutOfBounds}!?u16 {
+    return if (c.offset < a.len) b.*[0] else error.OutOfBounds;
+}
 """.strip())
+        assert code.errors == []
         assert len(code.content) == 1
         function_decl: FunctionDeclaration = cast(FunctionDeclaration, code.content[0])
         assert function_decl.name == "testFunc"
         assert function_decl.is_public is False
         assert function_decl.is_extern is False
         assert function_decl.is_export is False
-        assert function_decl.body == "{    _ = c;\n    return a + b;\n}"
+        assert function_decl.body == (
+            "{\n    return if (c.offset < a.len) b.*[0] else error.OutOfBounds;\n}"
+        )
 
-        assert function_decl.return_type == "usize"
+        assert function_decl.return_type == "error{OutOfBounds}!?u16"
 
         assert len(function_decl.params) == 3
         assert function_decl.params[0].name == "a"
@@ -50,13 +59,13 @@ fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a
         assert function_decl.params[2].name == "c"
 
         assert function_decl.params[0].is_comptime is False
-        assert function_decl.params[0].type == "usize"
+        assert function_decl.params[0].type == "[:0]const u8"
 
         assert function_decl.params[1].is_comptime is False
-        assert function_decl.params[1].type == "usize"
+        assert function_decl.params[1].type == "*const [2]u16"
 
         assert function_decl.params[2].is_comptime
-        assert function_decl.params[2].type == "u32"
+        assert function_decl.params[2].type == "struct { offset: usize }"
 
     def test_function_extern(self):
         code = SourceCode("pub extern fn testing(a: *const u32) ?void;")
