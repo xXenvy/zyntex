@@ -41,6 +41,8 @@ Run the commands below from the repository root unless a step changes directory.
       the steps in :ref:`Building native libraries (Zig)`.
       Otherwise, you are ready to go.
 
+.. _Building native libraries (Zig):
+
 Building native libraries (Zig)
 -------------------------------
 
@@ -100,13 +102,13 @@ Quality checks
 Commit & PR guidelines
 ----------------------
 
-- Keep PRs small and focused — one logical change per PR.
+- Keep PRs small and focused, one logical change per PR.
 - Ensure all tests pass locally before pushing.
 - Provide a short description of what the PR changes and why.
 - Link related issues or discussions in the PR description.
 
 Appendix: Recommended local workflow
------------------------------------
+------------------------------------
 
 1. Create branch.
 2. Implement change + add tests.

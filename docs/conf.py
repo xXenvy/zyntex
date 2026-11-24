@@ -10,15 +10,15 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
 project = 'zyntex'
-copyright = '2025, xXenvy'
+copyright = '2026, xXenvy'
 author = 'xXenvy'
-release = "0.2.3"
 
 package_source = Path(__file__).resolve().parents[1] / "python" / "src" / "__init__.py"
 package_spec = spec_from_file_location("zyntex", package_source)
 package = module_from_spec(package_spec)
 sys.modules["zyntex"] = package
 package_spec.loader.exec_module(package)
+release = str(package.__version__)
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -35,6 +35,7 @@ extensions = [
 
 templates_path = ['_templates']
 exclude_patterns = ['_build']
+autosectionlabel_maxdepth = 1
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
@@ -44,4 +45,3 @@ intersphinx_mapping = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-html_static_path = ['_static']
