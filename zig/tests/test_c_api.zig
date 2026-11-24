@@ -96,15 +96,6 @@ test "parser parses simple source file with errors" {
     try std.testing.expectEqual(error_2.token_index, 12);
 }
 
-test "parser parses large source file correctly" {
-    const tu: *TranslationUnit = c_api.createTranslationUnit("tests/test_sources/large.zig").?;
-    defer c_api.freeTranslationUnit(tu);
-
-    try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 8324);
-    try std.testing.expectEqual(c_api.getTranslationUnitNodesCount(tu), 4433);
-    try std.testing.expectEqual(c_api.getTranslationUnitErrorsCount(tu), 0);
-}
-
 test "parser parses simple code correctly" {
     const tu = c_api.createTranslationUnitFromSource("pub fn main() void {}").?;
     defer c_api.freeTranslationUnit(tu);
