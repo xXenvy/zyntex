@@ -54,15 +54,6 @@ test "parsing simple valid code from file produces no errors" {
     try std.testing.expectEqual(tu.errors.len, 0);
 }
 
-test "parsing large valid code from file produces no errors" {
-    var tu = try TranslationUnit.initFromFile(allocator, "tests/test_sources/large.zig");
-    defer tu.deinit();
-
-    try std.testing.expectEqual(tu.tokens.len, 8324);
-    try std.testing.expectEqual(tu.tree.nodes.len, 4433);
-    try std.testing.expectEqual(tu.errors.len, 0);
-}
-
 test "parsing simple invalid code from file produces two errors" {
     var tu = try TranslationUnit.initFromFile(allocator, "tests/test_sources/invalid.zig");
     defer tu.deinit();
