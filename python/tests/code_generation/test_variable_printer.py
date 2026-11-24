@@ -47,7 +47,7 @@ class TestVariablePrinter:
 
         assert variable.type_hint == "heap.Allocator"
         assert self.printer.print(variable) == source
-        
+
         variable.type_hint = '?[:0]const @import("a.b.zig").Type'
         generated = self.printer.print(variable)
 

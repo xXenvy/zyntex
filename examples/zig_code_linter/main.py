@@ -59,17 +59,7 @@ def make_func_max_params_rule(max_params: int, level: IssueLevel) -> RuleCallabl
         if not isinstance(node, FunctionDeclaration):
             return issues
 
-        # Defensive access to params.
-        # Zyntex may raise AssertionError if a parameter has an
-        # unsupported type (e.g., a struct type). In that case we
-        # simply skip this function. Future versions of Zyntex
-        # should provide full type support and make this unnecessary.
-        try:
-            params = node.params
-        except AssertionError:
-            return issues
-
-        if len(params) <= max_params:
+        if len(node.params) <= max_params:
             return issues
 
         # Approximate line number

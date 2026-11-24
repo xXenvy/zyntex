@@ -1,5 +1,5 @@
 Installation
-==========
+============
 The package is available to download on pypi.
 
 **Requirements:**
