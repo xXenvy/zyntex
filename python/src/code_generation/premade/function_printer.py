@@ -23,7 +23,10 @@ class FunctionPrinter(IDefaultPrintable):
 
 
 class FunctionParamPrinter(IDefaultPrintable):
-    """Printer for Zig function parameters."""
+    """Printer for Zig function parameters.
+
+    .. versionadded:: 0.3.3
+    """
 
     def print(self, target: FunctionDeclaration.FunctionParam) -> str:
         modifier = "comptime " if target.is_comptime else "noalias " if target.is_noalias else ""
