@@ -34,7 +34,7 @@ lib_functions = [
 
     FunctionSignature("getNodeSpelling", GenericSlice, (TranslationUnitPtr, ASTNode)),
     FunctionSignature("getNodeSource", GenericSlice, (TranslationUnitPtr, ctypes.c_uint32)),
-    FunctionSignature("getNodeType", ASTNode, (TranslationUnitPtr, ASTNode)),
+    FunctionSignature("getNodeType", GenericSlice, (TranslationUnitPtr, ASTNode)),
     FunctionSignature("getNodeAlign", GenericSlice, (TranslationUnitPtr, ASTNode)),
     FunctionSignature("getNodeBody", GenericSlice, (TranslationUnitPtr, ASTNode)),
     FunctionSignature("getNodeParamsCount", ctypes.c_size_t, (TranslationUnitPtr, ASTNode)),

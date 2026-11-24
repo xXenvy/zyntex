@@ -126,29 +126,38 @@ pub export fn getNodeSource(unit: *TranslationUnit, node_index: u32) callconv(.c
     return makeSlice(u8, source.ptr, source.len);
 }
 
-pub export fn getNodeType(unit: *TranslationUnit, node: ASTNode) callconv(.c) ASTNode {
+pub export fn getNodeType(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
+    const missing: GenericSlice = .{ .ptr = null, .len = 0 };
     const index: Ast.Node.Index = @fromBackingInt(node.index);
+
     if (unit.tree.fullVarDecl(index)) |decl| {
-        if (decl.ast.type_node.unwrap()) |type_node| {
-            return unit.nodes[@backingInt(type_node)];
-        }
-        return node;
+        const type_node = decl.ast.type_node.unwrap() orelse return missing;
+        return getNodeSource(unit, @backingInt(type_node));
     }
+
     var buffer: [1]Ast.Node.Index = undefined;
     if (unit.tree.fullFnProto(&buffer, index)) |proto| {
-        if (proto.ast.return_type.unwrap()) |return_type| {
-            return unit.nodes[@backingInt(return_type)];
+        const return_type = proto.ast.return_type.unwrap() orelse return missing;
+        const first = unit.tree.firstToken(return_type);
+        const source = unit.tree.getNodeSource(return_type);
+
+        // Zig stores an inferred error set's ! before the return expression.
+        if (first > 0 and unit.tree.tokenTag(first - 1) == .bang) {
+            const start = unit.tree.tokenStart(first - 1);
+            const end = unit.tree.tokenStart(first) + source.len;
+            const annotated_type = unit.tree.source[start..end];
+            return makeSlice(u8, annotated_type.ptr, annotated_type.len);
         }
-        return node;
+        return makeSlice(u8, source.ptr, source.len);
     }
     const data = unit.tree.nodeData(index);
     const type_index: Ast.Node.Index = switch (unit.tree.nodeTag(index)) {
         .array_type => data.node_and_node[1],
         .optional_type => data.node,
         .ptr_type_aligned => data.opt_node_and_node[1],
-        else => return node,
+        else => return missing,
     };
-    return unit.nodes[@backingInt(type_index)];
+    return getNodeSource(unit, @backingInt(type_index));
 }
 
 pub export fn getNodeAlign(unit: *TranslationUnit, node: ASTNode) callconv(.c) GenericSlice {
@@ -190,7 +199,10 @@ pub export fn getNodeBody(unit: *TranslationUnit, node: ASTNode) callconv(.c) Ge
 pub export fn getNodeParamsCount(unit: *TranslationUnit, node: ASTNode) callconv(.c) usize {
     var buffer: [1]Ast.Node.Index = undefined;
     const full_fn_proto = unit.tree.fullFnProto(&buffer, @fromBackingInt(node.index)) orelse return 0;
-    return full_fn_proto.ast.params.len;
+    var params = full_fn_proto.iterate(unit.tree);
+    var count: usize = 0;
+    while (params.next() != null) count += 1;
+    return count;
 }
 
 pub export fn getNodeParams(
@@ -205,21 +217,21 @@ pub export fn getNodeParams(
     var i: usize = 0;
     var params = full_fn_proto.iterate(unit.tree);
     while (params.next()) |param| {
-        // The existing FFI exposes parameters with an explicit type expression.
-        const type_expr = param.type_expr orelse continue;
         if (i >= capacity) break;
-        const param_node = unit.nodes[@backingInt(type_expr)];
+        const param_type = if (param.type_expr) |type_expr|
+            unit.tree.getNodeSource(type_expr)
+        else
+            unit.tree.tokenSlice(param.anytype_ellipsis3.?);
         const param_name = if (param.name_token) |name|
             unit.tree.tokenSlice(name)
         else
             "";
+        const modifier = if (param.comptime_noalias) |token| unit.tree.tokenTag(token) else null;
         out[i] = .{
             .name = makeSlice(u8, param_name.ptr, param_name.len),
-            .type = param_node,
-            .is_comptime = if (param.comptime_noalias) |modifier|
-                unit.tree.tokenTag(modifier) == .keyword_comptime
-            else
-                false,
+            .type = makeSlice(u8, param_type.ptr, param_type.len),
+            .is_comptime = modifier == .keyword_comptime,
+            .is_noalias = modifier == .keyword_noalias,
         };
         i += 1;
     }

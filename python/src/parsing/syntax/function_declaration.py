@@ -1,10 +1,9 @@
-from typing import Optional, Union
 from dataclasses import dataclass
+from typing import Optional, Union
 
 from ..bindings import PyASTNode, NodeTag, PyString
 from .lazy_init import LazyInit, lazy_invoke
 from .node_element import INodeElement
-from .type_node import TypeNode
 
 
 class FunctionDeclaration(INodeElement):
@@ -12,15 +11,28 @@ class FunctionDeclaration(INodeElement):
 
     @dataclass
     class FunctionParam:
-        name: str
-        type: TypeNode
-        is_comptime: bool
+        """A parameter in a Zig function declaration.
+
+        ``name`` is the parameter's identifier, and ``type`` is its type as
+        written in Zig source. For ``count: u32``, ``name`` is ``"count"`` and
+        ``type`` is ``"u32"``. An unnamed parameter such as ``u32`` in an
+        ``extern`` declaration has ``name=None`` and ``type="u32"``.
+
+        Generic parameters can use ``type="anytype"``. A variadic marker is
+        stored as an entry with ``name=None`` and ``type="..."`` so the printer
+        can reproduce it in the parameter list.
+        """
+
+        type: str
+        name: Optional[str] = None
+        is_comptime: bool = False
+        is_noalias: bool = False
 
     def __init__(
             self,
             name: Union[str, LazyInit],
             body: Union[str, None, LazyInit],
-            return_type: Union[TypeNode, LazyInit],
+            return_type: Union[str, LazyInit],
             params: Union[list[FunctionParam], None, LazyInit] = None,
             is_public: Union[bool, LazyInit] = False,
             is_extern: Union[bool, LazyInit] = False,
@@ -87,16 +99,17 @@ class FunctionDeclaration(INodeElement):
 
     @property
     @lazy_invoke
-    def return_type(self) -> TypeNode:
+    def return_type(self) -> str:
+        """The return type as Zig source, including any inferred error marker."""
         assert isinstance(self._return_type, LazyInit)
-        return_type: Optional[PyASTNode] = self._return_type.node.type
-        assert return_type is not None, "The function doesn't have a return type."
-
-        self._return_type = TypeNode.from_node(return_type)
+        return_type = self._return_type.node.type
+        if return_type is None:
+            raise ValueError("The function doesn't have a return type.")
+        self._return_type = return_type
         return self._return_type
 
     @return_type.setter
-    def return_type(self, value: TypeNode) -> None:
+    def return_type(self, value: str) -> None:
         self._return_type = value
 
     @property
@@ -104,16 +117,16 @@ class FunctionDeclaration(INodeElement):
     def params(self) -> list[FunctionParam]:
         """List of function parameters."""
         assert isinstance(self._params, LazyInit)
-        result = []
-        for param_data in self._params.node.params:
-            result.append(
-                FunctionDeclaration.FunctionParam(
-                    name=param_data.name.to_list(PyString)[0],
-                    type=TypeNode.from_node(PyASTNode(self._params.node.parent, param_data.type)),
-                    is_comptime=param_data.is_comptime,
-                )
-            )
-        self._params = result
+        node = self._params.node
+        params = []
+        for param in node.params:
+            params.append(self.FunctionParam(
+                type=param.type.to_list(PyString)[0],
+                name=param.name.to_list(PyString)[0] or None,
+                is_comptime=param.is_comptime,
+                is_noalias=param.is_noalias,
+            ))
+        self._params = params
         return self._params
 
     @params.setter

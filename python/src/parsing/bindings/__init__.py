@@ -3,7 +3,7 @@ from .structures import (
     ASTNode, ASTToken, ErrorReport, NodeParam, PyString
 )
 from .translation_unit import PyTranslationUnit, TranslationUnitPtr
-from .enums import NodeTag, TokenTag, ErrorTag, PrimitiveType
+from .enums import NodeTag, TokenTag, ErrorTag
 from .native import init_native_library, get_native_library
 from .ast_node import PyASTNode
 
@@ -21,7 +21,6 @@ __all__ = (
     "NodeTag",
     "TokenTag",
     "ErrorTag",
-    "PrimitiveType",
     "PyASTNode",
     "init_native_library",
     "get_native_library"

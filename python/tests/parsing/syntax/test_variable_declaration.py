@@ -1,7 +1,6 @@
 from typing import cast
 
 from zyntex.parsing.syntax import VariableDeclaration
-from zyntex.parsing.bindings import PrimitiveType
 from zyntex.parsing import SourceCode
 
 
@@ -29,7 +28,7 @@ class TestVariableDeclaration:
         assert variable_decl.is_public is False
         assert variable_decl.is_export is False
         assert variable_decl.is_extern is False
-        assert variable_decl.type_hint.absolute_type == PrimitiveType.usize
+        assert variable_decl.type_hint == "usize"
         assert variable_decl.value == "15"
         assert variable_decl.alignment is None
 
@@ -42,7 +41,7 @@ class TestVariableDeclaration:
         assert variable_decl.is_public is True
         assert variable_decl.is_export is False
         assert variable_decl.is_extern is False
-        assert variable_decl.type_hint.absolute_type == PrimitiveType.usize
+        assert variable_decl.type_hint == "usize"
         assert variable_decl.value == "25"
         assert variable_decl.alignment is None
 
@@ -66,7 +65,7 @@ class TestVariableDeclaration:
         assert variable_decl.name == "ABC"
         assert variable_decl.is_const is False
         assert variable_decl.is_public is False
-        assert variable_decl.type_hint.absolute_type == PrimitiveType.i64
+        assert variable_decl.type_hint == "i64"
         assert variable_decl.is_export is True
         assert variable_decl.is_extern is False
         assert variable_decl.value == "12"
@@ -79,7 +78,7 @@ class TestVariableDeclaration:
         assert variable_decl.name == "X"
         assert variable_decl.is_const is True
         assert variable_decl.is_public is False
-        assert variable_decl.type_hint.absolute_type == PrimitiveType.usize
+        assert variable_decl.type_hint == "usize"
         assert variable_decl.is_export is False
         assert variable_decl.is_extern is True
         assert variable_decl.value is None

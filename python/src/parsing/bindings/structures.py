@@ -112,12 +112,13 @@ class ErrorReport(ctypes.Structure):
 
 
 class NodeParam(ctypes.Structure):
-    """Represents a node parameter."""
+    """A parameter's name, Zig type source and modifiers."""
 
     _fields_ = [
         ("name", GenericSlice),
-        ("type", ASTNode),
-        ("is_comptime", ctypes.c_bool)
+        ("type", GenericSlice),
+        ("is_comptime", ctypes.c_bool),
+        ("is_noalias", ctypes.c_bool),
     ]
 
     def __repr__(self) -> str:

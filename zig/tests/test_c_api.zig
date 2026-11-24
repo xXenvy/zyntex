@@ -113,13 +113,13 @@ test "parser parses simple code correctly" {
     const nodes = c_api.toSlice(ASTNode, c_api.getTranslationUnitNodes(tu));
 
     const fn_node: ASTNode = nodes[1];
-    const fn_return_type_node: ASTNode = c_api.getNodeType(tu, fn_node);
+    const fn_return_type = c_api.getNodeType(tu, fn_node);
 
     try std.testing.expectEqual(true, c_api.isNodePublic(tu, fn_node));
     try std.testing.expectEqual(false, c_api.isNodeConst(tu, fn_node));
     try std.testing.expectEqual(false, c_api.isNodeContainer(fn_node));
     try std.testing.expectEqualStrings("main", c_api.toSlice(u8, c_api.getNodeSpelling(tu, fn_node)));
-    try std.testing.expectEqualStrings("void", c_api.toSlice(u8, c_api.getNodeSpelling(tu, fn_return_type_node)));
+    try std.testing.expectEqualStrings("void", c_api.toSlice(u8, fn_return_type));
 
     try std.testing.expectEqual(c_api.getTranslationUnitTokensCount(tu), 9);
     try std.testing.expectEqual(c_api.getTranslationUnitNodesCount(tu), 5);
@@ -208,13 +208,13 @@ test "parser parses function params correctly" {
     try std.testing.expectEqual(indexes.len, 1);
 
     const func_node: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[0]);
-    const func_return_type_node: ASTNode = c_api.getNodeType(tu, func_node);
+    const func_return_type = c_api.getNodeType(tu, func_node);
 
     try std.testing.expectEqual(true, c_api.isNodePublic(tu, func_node));
     try std.testing.expectEqual(false, c_api.isNodeConst(tu, func_node));
     try std.testing.expectEqual(false, c_api.isNodeContainer(func_node));
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_node)), "testFunc");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node)), "usize");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, func_return_type), "usize");
     try std.testing.expectEqual(3, c_api.getNodeParamsCount(tu, func_node));
 
     var params: [3]c_api.NodeParam = undefined;
@@ -225,13 +225,41 @@ test "parser parses function params correctly" {
     try std.testing.expectEqualStrings(c_api.toSlice(u8, params[1].name), "b");
     try std.testing.expectEqualStrings(c_api.toSlice(u8, params[2].name), "len");
 
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, params[0].type)), "usize");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, params[1].type)), "usize");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, params[2].type)), "u32");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, params[0].type), "usize");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, params[1].type), "usize");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, params[2].type), "u32");
 
     try std.testing.expectEqual(params[0].is_comptime, false);
     try std.testing.expectEqual(params[1].is_comptime, false);
     try std.testing.expectEqual(params[2].is_comptime, true);
+}
+
+test "parameter API preserves generic unnamed noalias and variadic parameters" {
+    const unit = c_api.createTranslationUnitFromSource(
+        \\extern fn f(anytype, noalias *u8, comptime x: anytype, u8, ...) void;
+    ).?;
+    defer c_api.freeTranslationUnit(unit);
+    try std.testing.expectEqual(0, c_api.getTranslationUnitErrorsCount(unit));
+    const indexes = c_api.toSlice(u32, c_api.getTranslationUnitRootNodes(unit));
+
+    const function = c_api.getTranslationUnitNodeFromIndex(unit, indexes[0]);
+    try std.testing.expectEqual(5, c_api.getNodeParamsCount(unit, function));
+    var params: [5]c_api.NodeParam = undefined;
+
+    try std.testing.expectEqual(0, c_api.getNodeParams(unit, function, &params, 0));
+    try std.testing.expectEqual(1, c_api.getNodeParams(unit, function, &params, 1));
+    try std.testing.expectEqual(5, c_api.getNodeParams(unit, function, &params, params.len));
+
+    try std.testing.expectEqualStrings("anytype", c_api.toSlice(u8, params[0].type));
+    try std.testing.expect(params[1].is_noalias and !params[1].is_comptime);
+    try std.testing.expectEqualStrings("*u8", c_api.toSlice(u8, params[1].type));
+
+    try std.testing.expect(params[2].is_comptime);
+    try std.testing.expectEqualStrings("anytype", c_api.toSlice(u8, params[2].type));
+    try std.testing.expectEqualStrings("x", c_api.toSlice(u8, params[2].name));
+
+    try std.testing.expectEqualStrings("u8", c_api.toSlice(u8, params[3].type));
+    try std.testing.expectEqualStrings("...", c_api.toSlice(u8, params[4].type));
 }
 
 test "parser parses node types correctly" {
@@ -248,22 +276,22 @@ test "parser parses node types correctly" {
     try std.testing.expectEqual(indexes.len, 4);
 
     const func_node: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[0]);
-    const func_type_node: ASTNode = c_api.getNodeType(tu, func_node);
+    const func_type = c_api.getNodeType(tu, func_node);
 
     const variable1_node: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[1]);
-    const variable1_type_node: ASTNode = c_api.getNodeType(tu, variable1_node);
+    const variable1_type = c_api.getNodeType(tu, variable1_node);
 
     const variable2_node: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[2]);
-    const variable2_type_node: ASTNode = c_api.getNodeType(tu, variable2_node);
+    const variable2_type_node = c_api.getNodeType(tu, variable2_node);
 
     const variable_align_node: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[3]);
-    const variable_align_type_node: ASTNode = c_api.getNodeType(tu, variable_align_node);
+    const variable_align_type = c_api.getNodeType(tu, variable_align_node);
 
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_type_node)), "usize");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, variable1_type_node)), "i64");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, func_type), "usize");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, variable1_type), "i64");
     try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeAlign(tu, variable_align_node)), "8");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, variable_align_type_node)), "u32");
-    try std.testing.expectEqual(c_api.getNodeType(tu, variable2_type_node).index, variable2_node.index);
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, variable_align_type), "u32");
+    try std.testing.expect(variable2_type_node.ptr == null);
 }
 
 test "parser parses externs correctly" {
@@ -276,13 +304,13 @@ test "parser parses externs correctly" {
     try std.testing.expectEqual(indexes.len, 2);
 
     const func_node_1: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[0]);
-    const func_return_type_node_1: ASTNode = c_api.getNodeType(tu, func_node_1);
+    const func_return_type_node_1 = c_api.getNodeType(tu, func_node_1);
 
     const func_node_2: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[1]);
-    const func_return_type_node_2: ASTNode = c_api.getNodeType(tu, func_node_2);
+    const func_return_type_node_2 = c_api.getNodeType(tu, func_node_2);
 
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node_1)), "void");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node_2)), "usize");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, func_return_type_node_1), "void");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, func_return_type_node_2), "usize");
 
     try std.testing.expectEqual(c_api.isNodePublic(tu, func_node_1), true);
     try std.testing.expectEqual(c_api.isNodePublic(tu, func_node_2), false);
@@ -308,16 +336,13 @@ test "parser parses exports correctly" {
     try std.testing.expectEqual(indexes.len, 2);
 
     const func_node_1: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[0]);
-    const func_return_type_node_1: ASTNode = c_api.getNodeType(tu, func_node_1);
+    const func_return_type_node_1 = c_api.getNodeType(tu, func_node_1);
 
     const func_node_2: ASTNode = c_api.getTranslationUnitNodeFromIndex(tu, indexes[1]);
-    const func_return_type_node_2: ASTNode = c_api.getNodeType(tu, func_node_2);
+    const func_return_type_node_2 = c_api.getNodeType(tu, func_node_2);
 
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node_1)), "void");
-    try std.testing.expectEqualStrings(c_api.toSlice(u8, c_api.getNodeSpelling(tu, func_return_type_node_2)), "usize");
-
-    try std.testing.expectEqual(c_api.isNodeErrorUnion(tu, func_return_type_node_1), true);
-    try std.testing.expectEqual(c_api.isNodeErrorUnion(tu, func_return_type_node_2), false);
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, func_return_type_node_1), "!void");
+    try std.testing.expectEqualStrings(c_api.toSlice(u8, func_return_type_node_2), "usize");
 
     try std.testing.expectEqual(c_api.isNodePublic(tu, func_node_1), true);
     try std.testing.expectEqual(c_api.isNodePublic(tu, func_node_2), false);

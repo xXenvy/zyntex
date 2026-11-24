@@ -78,12 +78,15 @@ class PyASTNode:
         return self._lib.getNodeSource(self._parent.ptr, self._node.index).to_list(PyString)[0]
 
     @property
-    def type(self) -> Optional[PyASTNode]:
-        """The type node assigned to Node. For functions, it's the return type.
-        For variable declarations, it specifies the type hint."""
-        node_type = self._lib.getNodeType(self._parent.ptr, self._node)
-        if node_type.index != self._node.index:
-            return PyASTNode(self.parent, node_type)
+    def type(self) -> Optional[str]:
+        """The associated type as Zig source, or None if absent.
+
+        For functions this is the return type, including an inferred ``!``.
+        For variable declarations it is the explicit type annotation.
+        """
+        type_source = self._lib.getNodeType(self._parent.ptr, self._node)
+        if not type_source.is_empty:
+            return type_source.to_list(PyString)[0]
 
     @property
     def body(self) -> Optional[str]:

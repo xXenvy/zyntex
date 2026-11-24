@@ -1,7 +1,6 @@
 from typing import cast
 
 from zyntex.parsing.syntax import FunctionDeclaration
-from zyntex.parsing.bindings import PrimitiveType
 from zyntex.parsing import SourceCode
 
 
@@ -17,9 +16,7 @@ class TestFunctionDeclaration:
         assert function_decl.is_export is False
         assert function_decl.body == "{ return 10; }"
         assert function_decl.params == []
-        assert function_decl.return_type.is_type()
-        assert function_decl.return_type.is_const is False
-        assert function_decl.return_type.absolute_type == PrimitiveType.usize
+        assert function_decl.return_type == "usize"
 
     def test_private_function(self):
         code = SourceCode("fn testFunc() void { const a = 10;\n_ = a; }")
@@ -31,9 +28,7 @@ class TestFunctionDeclaration:
         assert function_decl.is_export is False
         assert function_decl.body == "{ const a = 10;\n_ = a; }"
         assert function_decl.params == []
-        assert function_decl.return_type.is_type()
-        assert function_decl.return_type.is_const is False
-        assert function_decl.return_type.absolute_type == PrimitiveType.void
+        assert function_decl.return_type == "void"
 
     def test_function_params(self):
         code = SourceCode("""
@@ -47,9 +42,7 @@ fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a
         assert function_decl.is_export is False
         assert function_decl.body == "{    _ = c;\n    return a + b;\n}"
 
-        assert function_decl.return_type.is_type()
-        assert function_decl.return_type.is_const is False
-        assert function_decl.return_type.absolute_type == PrimitiveType.usize
+        assert function_decl.return_type == "usize"
 
         assert len(function_decl.params) == 3
         assert function_decl.params[0].name == "a"
@@ -57,19 +50,13 @@ fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a
         assert function_decl.params[2].name == "c"
 
         assert function_decl.params[0].is_comptime is False
-        assert function_decl.params[0].type.is_type()
-        assert function_decl.params[0].type.is_const is False
-        assert function_decl.params[0].type.absolute_type == PrimitiveType.usize
+        assert function_decl.params[0].type == "usize"
 
         assert function_decl.params[1].is_comptime is False
-        assert function_decl.params[1].type.is_type()
-        assert function_decl.params[1].type.is_const is False
-        assert function_decl.params[1].type.absolute_type == PrimitiveType.usize
+        assert function_decl.params[1].type == "usize"
 
         assert function_decl.params[2].is_comptime
-        assert function_decl.params[2].type.is_type()
-        assert function_decl.params[2].type.is_const is False
-        assert function_decl.params[2].type.absolute_type == PrimitiveType.u32
+        assert function_decl.params[2].type == "u32"
 
     def test_function_extern(self):
         code = SourceCode("pub extern fn testing(a: *const u32) ?void;")
@@ -81,18 +68,10 @@ fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a
         assert function_decl.is_extern is True
         assert function_decl.is_export is False
 
-        assert function_decl.return_type.is_optional()
-        assert function_decl.return_type.is_type() is False
-        assert function_decl.return_type.is_const is False
-        assert function_decl.return_type.optional_type.type == PrimitiveType.void
-        assert function_decl.return_type.absolute_type == PrimitiveType.void
+        assert function_decl.return_type == "?void"
 
         assert len(function_decl.params) == 1
-        assert function_decl.params[0].type.is_pointer()
-        assert function_decl.params[0].type.is_const is False
-        assert function_decl.params[0].type.pointer_type.is_const
-        assert function_decl.params[0].type.pointer_type.type == PrimitiveType.u32
-        assert function_decl.params[0].type.absolute_type == PrimitiveType.u32
+        assert function_decl.params[0].type == "*const u32"
 
     def test_function_export(self):
         code = SourceCode("pub export fn testExport() *void {}")
@@ -103,9 +82,5 @@ fn testFunc(a: usize, b: usize, comptime c: u32) usize {    _ = c;\n    return a
         assert function_decl.body == "{}"
         assert function_decl.is_extern is False
         assert function_decl.is_export is True
-        assert function_decl.return_type.is_type() is False
-        assert function_decl.return_type.is_const is False
-        assert function_decl.return_type.is_pointer()
-        assert function_decl.return_type.pointer_type.type == PrimitiveType.void
-        assert function_decl.return_type.absolute_type == PrimitiveType.void
+        assert function_decl.return_type == "*void"
         assert len(function_decl.params) == 0

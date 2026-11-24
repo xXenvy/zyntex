@@ -2,10 +2,10 @@ from zyntex.code_generation.premade import (
     SourceCodePrinter,
     VariablePrinter,
     FunctionPrinter,
-    TypePrinter
+    FunctionParamPrinter,
 )
 from zyntex.code_generation import PrinterDispatcher
-from zyntex.parsing.syntax import FunctionDeclaration, VariableDeclaration, TypeNode
+from zyntex.parsing.syntax import FunctionDeclaration, VariableDeclaration
 from zyntex.parsing import SourceCode
 
 
@@ -21,8 +21,8 @@ pub fn testFunc(arg: [ABC]usize) void {
 """)
         cls.dispatcher = PrinterDispatcher()
         cls.dispatcher.add(FunctionDeclaration, FunctionPrinter)
+        cls.dispatcher.add(FunctionDeclaration.FunctionParam, FunctionParamPrinter)
         cls.dispatcher.add(VariableDeclaration, VariablePrinter)
-        cls.dispatcher.add(TypeNode, TypePrinter)
         cls.printer = SourceCodePrinter(cls.dispatcher)
 
     def test_prints_source_code_with_default_configuration(self):

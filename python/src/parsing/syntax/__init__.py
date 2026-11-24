@@ -4,7 +4,6 @@ from .test_declaration import TestDeclaration
 from .comptime_block import ComptimeBlock
 from .lazy_init import LazyInit, lazy_invoke
 from .node_element import INodeElement
-from .type_node import TypeNode
 
 __all__ = (
     "INodeElement",
@@ -12,7 +11,6 @@ __all__ = (
     "VariableDeclaration",
     "TestDeclaration",
     "ComptimeBlock",
-    "TypeNode",
     "LazyInit",
     "lazy_invoke"
 )
